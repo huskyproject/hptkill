@@ -1,3 +1,12 @@
+hptkill (1.10-20020822-1) unstable; urgency=low
+
+  * New maintainer
+  * Change scheme of version numbers: include CVS date
+  * debian/rules: DH_COMPAT=4
+  * Setup new location for apt: http://husky.sourceforge.net/debian
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Thu, 22 Aug 2002 17:21:13 +0600
+
 hptkill (1.10-1) unstable; urgency=low
 
   * Initial Release.
