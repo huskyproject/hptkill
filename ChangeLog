@@ -1,3 +1,16 @@
+2002-07-18 Thursday 21:39  stas
+
+	* makefile.cyg (1.1): makefile for cygwin
+
+2002-07-18 Thursday 21:39  stas
+
+	* src/hptkill.c (1.22): Command line parameter '-c' change: now
+	specify alternate config
+
+2002-07-18 Thursday 13:57  mche
+
+	* makefile.mvc (1.2), makefile.mvcdll (1.4): corrected makefiles
+
 2002-07-16 Tuesday 21:59  stas
 
 	* .cvs2cl (1.1): Use standard husky ChangeLog
