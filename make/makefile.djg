@@ -13,10 +13,10 @@ RMOPT	=
 
 CFLAGS	= -Wall -c -mcpu=i486
 CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
-LFLAGS	= -s -L../../fidoconf -L../../smapi/make -L../../huskylib/make
+LFLAGS	= -s
 COPT	= -O2
 
-LIBS	= -lfconfdjg -lsmapidjg -lhuskydjg
+LIBS	= ../../fidoconf/make/fconfdjg.a ../../smapi/make/smapidjg.a ../../huskylib/make/huskydjg.a
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
