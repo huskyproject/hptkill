@@ -78,9 +78,10 @@ typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 e_senduns sendUnSubscribe = eNodes;
 int     delFromConfig = 0;
 int     eraseBase = 1;
-int     killSend = 0;
 int     killPass = 0;
 int     createDupe = 0;
+static  time_t  tnow;
+const   long    secInDay = 3600*24;
 
 
 void usage(void) {
@@ -96,7 +97,6 @@ void usage(void) {
     fprintf(outlog, "   -s - save (don't erase) message & dupe bases\n");
     fprintf(outlog, "   -f file - read areas list from file in addition to args\n");
     fprintf(outlog, "   -f -    - read areas list from stdin in addition to args\n");
-    fprintf(outlog, "   -k - set Kill/Sent attribute to messages for links\n");
     fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
     fprintf(outlog, "   -pp - same as -p including paused links\n");
     fprintf(outlog, "   -y - find & kill ANY echoareas with <=1 links\n");
@@ -147,7 +147,6 @@ int changeconfig(char *fileName, s_area *area) {
             }
         }
         strbeg = get_hcfgPos();
-        w_log(LL_DEBUGF, __FILE__ ":%u:changeconfig() strbeg=%l", __LINE__, strbeg);
         nfree(line);
         nfree(cfgline);
     }
@@ -266,6 +265,61 @@ char *createDupeFileName(s_area *area) {
     return retname;
 }
 
+void update_queue(s_area *area)
+{
+    char *line    = NULL;
+    FILE *queryFile;
+    char seps[]   = " \t\n";
+    char upDate   = 0;
+
+    if(!config->areafixQueueFile)
+        return;
+
+    if ( !(queryFile = fopen(config->areafixQueueFile,"a+b")) ) /* can't open query file */
+    {
+       w_log(LL_ERR, "Can't open areafixQueueFile %s: %s", config->areafixQueueFile, strerror(errno) );
+       return;
+    }
+    rewind(queryFile);
+    while ((line = readLine(queryFile)) != NULL)
+    {
+        char* token = strtok( line, seps );
+        if(strcasecmp(token,area->areaName) == 0)
+        {
+            upDate = 1;
+            break;
+        }
+        nfree(line);
+    }
+    nfree(line)
+    
+    if (upDate == 0)
+    {
+        long eTime;
+        struct  tm t1,t2;
+        eTime = tnow + config->killedRequestTimeout*secInDay;
+        t1 = *localtime( &tnow );
+        t2 = *localtime( &eTime );
+        xscatprintf( &line , "%s %s %d-%02d-%02d@%02d:%02d\t%d-%02d-%02d@%02d:%02d" ,
+                area->areaName,
+                "kill",
+                t1.tm_year + 1900,
+                t1.tm_mon  + 1,
+                t1.tm_mday,
+                t1.tm_hour,
+                t1.tm_min,
+                t2.tm_year + 1900,
+                t2.tm_mon  + 1,
+                t2.tm_mday,
+                t2.tm_hour,
+                t2.tm_min   );
+
+        xstrscat(&line, " ", aka2str(*(area->useAka)), "\n", NULL);
+        fputs(line , queryFile);
+    }
+    fclose(queryFile);
+}
+
 void delete_area(s_area *area)
 {
     char *an = area->areaName;
@@ -297,6 +351,7 @@ void delete_area(s_area *area)
 	break;
     }
 
+  
     /* delete msgbase and dupebase for the area */
     if (eraseBase) {
 
@@ -320,6 +375,9 @@ void delete_area(s_area *area)
 
     /* remove area from config-file */
     if (delFromConfig) {
+
+    update_queue(area);
+
 	fprintf(outlog, "   deleting from config");
 	if (changeconfig (getConfigFileName(),  area) != 0)
 	    fprintf(outlog, " ERROR!\n");
@@ -350,7 +408,7 @@ void delete_area(s_area *area)
 
 
 int main(int argc, char **argv) {
-
+    
     int i, j;
     UINT k;
     struct _minf m;
@@ -375,309 +433,306 @@ int main(int argc, char **argv) {
     FILE *fNoDupe = NULL;
     char *dupename = NULL;
     char *cfgfile = NULL;
-
-
+    
+    
     outlog=stdout;
-
+    
     setbuf(outlog, NULL);
-
+    
     for (i=1; i<argc; i++) {
-	if ( argv[i][0] == '-' ) {
-	    switch (argv[i][1])
-		{
-		case 'c': /* alternate config file */
-                    if ( ++i<argc ) {
-                      cfgfile = argv[i];
-                    } else {
-                      fprintf( stderr, "Parameter required after -c\n");
-                      usage();
+        if ( argv[i][0] == '-' ) {
+            switch (argv[i][1])
+            {
+            case 'c': /* alternate config file */
+                if ( ++i<argc ) {
+                    cfgfile = argv[i];
+                } else {
+                    fprintf( stderr, "Parameter required after -c\n");
+                    usage();
+                }
+                break;
+            case '1': /* send unsubscribe message to first link only */
+                sendUnSubscribe = eFirstLink;
+                break;
+                
+            case 'n': /* don't send unsubscribe message */
+            case 'N':
+                sendUnSubscribe = eNobody;
+                break;
+                
+            case 'a': /* send unsubscribe message all links */
+            case 'A':
+                sendUnSubscribe = eAll;
+                break;
+                
+            case 'd': /* delete area from config */
+            case 'D':
+                delFromConfig = 1;
+                break;
+                
+            case 's': /* save (don't erase) message & dupe bases */
+            case 'S':
+                eraseBase = 0;
+                break;
+                
+            case 'f': /* read areas list from file */
+            case 'F':
+                i++;
+                
+                if ( argv[i] == NULL || argv[i][0] == '\0') {
+                    usage();
+                    exit(-1);
+                }
+                
+                if (strcmp(argv[i], "-") == 0) {
+                    f=stdin;
+                } else {
+                    if ( !(f=fopen(argv[i], "r"))) {
+                        fprintf(outlog, "%s: Can't open file '%s'\n", argv[0], argv[i]);
+                        exit(-1);
                     }
-                    break;
-		case '1': /* send unsubscribe message to first link only */
-		    sendUnSubscribe = eFirstLink;
-		    break;
-
-		case 'n': /* don't send unsubscribe message */
-		case 'N':
-		    sendUnSubscribe = eNobody;
-		    break;
-
-		case 'a': /* send unsubscribe message all links */
-		case 'A':
-		    sendUnSubscribe = eAll;
-		    break;
-
-		case 'd': /* delete area from config */
-		case 'D':
-		    delFromConfig = 1;
-		    break;
-
-		case 's': /* save (don't erase) message & dupe bases */
-		case 'S':
-		    eraseBase = 0;
-		    break;
-
-		case 'f': /* read areas list from file */
-		case 'F':
-		    i++;
-
-		    if ( argv[i] == NULL || argv[i][0] == '\0') {
-			usage();
-			exit(-1);
-		    }
-
-		    if (strcmp(argv[i], "-") == 0) {
-			f=stdin;
-		    } else {
-			if ( !(f=fopen(argv[i], "r"))) {
-			    fprintf(outlog, "%s: Can't open file '%s'\n", argv[0], argv[i]);
-			    exit(-1);
-			}
-		    }
-
-		    while (!feof(f)) {
-			line = readLine(f);
-
-			if (line) {
-			    nareas++;
-			    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
-			    areas[nareas-1] = line;
-			    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
-			    needfree[nareas-1] = 1;
-			}
-
-		    }
-
-		    if (f != stdin) fclose(f);
-		    break;
-
-		case 'k': /* set Kill/Sent attribute to messages for links */
-		case 'K':
-		    killSend = 1;
-		    break;
-
-		case 'p': /* kill passthrough areas with 1 link*/
-		case 'P':
-		    killNoLink++;
-		    killPass++;
-		    if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
-		    break;
-
-		case 'y': /* kill ANY areas with <=1 link*/
-		case 'Y':
-		    killLowLink++;
-		    if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
-		    break;
-
-		case 'o': /* kill passthrough area with dupebase older 'days' days */
-		case 'O':
-		    if (argv[i][1]=='O') killWithoutDupes++;
-		    i++;
-		    if ( argv[i] == NULL || argv[i][0] == '\0') {
-			usage();
-			exit(-1);
-		    }
-		    killPass++;
-		    killOld++;
-		    oldest = time(NULL) - atoi(argv[i]) * 60*60*24;
-		    break;
-
-		case 'l': /* write list of areas without dupebase to file  */
-		case 'L':
-		    i++;
-		    if ( argv[i] == NULL || argv[i][0] == '\0') {
-			usage();
-			exit(-1);
-		    }
-		    listNoDupeFile = argv[i];
-		    break;
-
-		case 'C': /* create empty dupebase if it doesn't exist */
-		    createDupe++;
-		    break;
-
-		default:
-		    usage();
-		    exit(-1);
-		}
-	} else {
-	    // AreaName(s) specified by args
-	    nareas++;
-	    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
-	    areas[nareas-1] = argv[i];
-	    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
-	    needfree[nareas-1] = 0;
-	}
+                }
+                
+                while (!feof(f)) {
+                    line = readLine(f);
+                    
+                    if (line) {
+                        nareas++;
+                        areas = (char **)srealloc ( areas, nareas*sizeof(char *));
+                        areas[nareas-1] = line;
+                        needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
+                        needfree[nareas-1] = 1;
+                    }
+                    
+                }
+                
+                if (f != stdin) fclose(f);
+                break;
+                
+            case 'p': /* kill passthrough areas with 1 link*/
+            case 'P':
+                killNoLink++;
+                killPass++;
+                if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
+                break;
+                
+            case 'y': /* kill ANY areas with <=1 link*/
+            case 'Y':
+                killLowLink++;
+                if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
+                break;
+                
+            case 'o': /* kill passthrough area with dupebase older 'days' days */
+            case 'O':
+                if (argv[i][1]=='O') killWithoutDupes++;
+                i++;
+                if ( argv[i] == NULL || argv[i][0] == '\0') {
+                    usage();
+                    exit(-1);
+                }
+                killPass++;
+                killOld++;
+                oldest = time(NULL) - atoi(argv[i]) * 60*60*24;
+                break;
+                
+            case 'l': /* write list of areas without dupebase to file  */
+            case 'L':
+                i++;
+                if ( argv[i] == NULL || argv[i][0] == '\0') {
+                    usage();
+                    exit(-1);
+                }
+                listNoDupeFile = argv[i];
+                break;
+                
+            case 'C': /* create empty dupebase if it doesn't exist */
+                createDupe++;
+                break;
+                
+            default:
+                usage();
+                exit(-1);
+        }
+    } else {
+        // AreaName(s) specified by args
+        nareas++;
+        areas = (char **)srealloc ( areas, nareas*sizeof(char *));
+        areas[nareas-1] = argv[i];
+        needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
+        needfree[nareas-1] = 0;
     }
-
+    }
+    
     if (nareas == 0) {
-	if (killPass || killLowLink) {
-	    nareas++;
-	    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
-	    areas[nareas-1] = "*";
-	    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
-	    needfree[nareas-1] = 0;
-	} else {
-	    if (!createDupe) {
-		usage();
-		exit (-1);
-	    }
-	}
+        if (killPass || killLowLink) {
+            nareas++;
+            areas = (char **)srealloc ( areas, nareas*sizeof(char *));
+            areas[nareas-1] = "*";
+            needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
+            needfree[nareas-1] = 0;
+        } else {
+            if (!createDupe) {
+                usage();
+                exit (-1);
+            }
+        }
     }
-
+    
     fprintf(outlog,"hptkill %s\n", version);
-
+    
     if( cfgfile && cfgfile[0] )
-           config = readConfig(cfgfile);
+        config = readConfig(cfgfile);
     else   config = readConfig(getConfigFileName());
-
+    
     if (!config) {
-	fprintf(outlog, "Could not read fido config\n");
-	return (1);
+        fprintf(outlog, "Could not read fido config\n");
+        return (1);
     }
+
+    time( &tnow );
 
     m.req_version = 0;
     m.def_zone = (UINT16) config->addr[0].zone;
     if (MsgOpenApi(&m) != 0) fprintf(outlog, "MsgApiOpen Error");
-
+    
     for ( j=0; j<nareas; j++) {
-	found = 0;
-
-	for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
-	    if (patimat(area->areaName, areas[j])==1){
-
-		delArea = 0;
-		if (killPass==0 && killLowLink==0) delArea++;
-		else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
-		    if (killNoLink) {
-			if (area->downlinkCount <= 1) delArea++;
-			else if (checkPaused) {
-			    delArea = 2; // if two links w/o pause - leave untouched
-			    for (k=0; (unsigned int)k < area->downlinkCount && delArea; k++) {
-				if (area->downlinks[k]->link->Pause == 0) delArea--;
-			    }
-			}
-		    }
-		    if (killOld && !delArea && area->dupeCheck != dcOff) {
-			dupename = createDupeFileName(area);
-			if (dupename) {
-			    if (stat(dupename, &stbuf)==0) {
-				if (stbuf.st_mtime < oldest) delArea++;
-			    } else {
-				if (killWithoutDupes) {
-				    delArea++;
-				}
-				if (listNoDupeFile) {
-				    if (!fNoDupe) {
-					if (!(fNoDupe=fopen (listNoDupeFile, "a"))) {
-					    fprintf (stderr, "Can't open file '%s' for appending\n", listNoDupeFile);
-					}
-				    }
-				    if (fNoDupe) fprintf (fNoDupe, "%s\n", area->areaName);
-
-				}
-			    }
-			    nfree(dupename);
-			}
-		    }
-		}
-		if (killLowLink) {
-	            if (area->downlinkCount <= 1) delArea++;
-		    else if (checkPaused) {
-		        delArea = 2; // if two links w/o pause - leave untouched
-		        for (k=0; k < area->downlinkCount && delArea; k++) {
-		          if (area->downlinks[k]->link->Pause == 0) delArea--;
-		        }
-		    }
-		}
-		if (delArea) {
-		    delete_area(area);
-		    killed++;
-		    found++;
-		    if (delFromConfig) { // Area is removed from areas array!
-			i--;
-			area--;
-		    }
-
-		}
-	    }
-	}
-
-	if (killPass==0 && killLowLink==0) {
-	    for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
-		if (patimat(area->areaName, areas[j])==1){
-		    delete_area(area);
-		    killed++;
-		    found++;
-		    if (delFromConfig) { // Area is removed from areas array!
-			i--;
-			area--;
-		    }
-		}
-	    }
-
-	    if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
-	}
+        found = 0;
+        
+        for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
+            if (patimat(area->areaName, areas[j])==1){
+                
+                delArea = 0;
+                if (killPass==0 && killLowLink==0) delArea++;
+                else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
+                    if (killNoLink) {
+                        if (area->downlinkCount <= 1) delArea++;
+                        else if (checkPaused) {
+                            delArea = 2; // if two links w/o pause - leave untouched
+                            for (k=0; (unsigned int)k < area->downlinkCount && delArea; k++) {
+                                if (area->downlinks[k]->link->Pause == 0) delArea--;
+                            }
+                        }
+                    }
+                    if (killOld && !delArea && area->dupeCheck != dcOff) {
+                        dupename = createDupeFileName(area);
+                        if (dupename) {
+                            if (stat(dupename, &stbuf)==0) {
+                                if (stbuf.st_mtime < oldest) delArea++;
+                            } else {
+                                if (killWithoutDupes) {
+                                    delArea++;
+                                }
+                                if (listNoDupeFile) {
+                                    if (!fNoDupe) {
+                                        if (!(fNoDupe=fopen (listNoDupeFile, "a"))) {
+                                            fprintf (stderr, "Can't open file '%s' for appending\n", listNoDupeFile);
+                                        }
+                                    }
+                                    if (fNoDupe) fprintf (fNoDupe, "%s\n", area->areaName);
+                                    
+                                }
+                            }
+                            nfree(dupename);
+                        }
+                    }
+                }
+                if (killLowLink) {
+                    if (area->downlinkCount <= 1) delArea++;
+                    else if (checkPaused) {
+                        delArea = 2; // if two links w/o pause - leave untouched
+                        for (k=0; k < area->downlinkCount && delArea; k++) {
+                            if (area->downlinks[k]->link->Pause == 0) delArea--;
+                        }
+                    }
+                }
+                if (delArea) {
+                    delete_area(area);
+                    killed++;
+                    found++;
+                    if (delFromConfig) { // Area is removed from areas array!
+                        i--;
+                        area--;
+                    }
+                    
+                }
+            }
+        }
+        
+        if (killPass==0 && killLowLink==0) {
+            for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
+                if (patimat(area->areaName, areas[j])==1){
+                    delete_area(area);
+                    killed++;
+                    found++;
+                    if (delFromConfig) { // Area is removed from areas array!
+                        i--;
+                        area--;
+                    }
+                }
+            }
+            
+            if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
+        }
     }
-
+    
     if (fNoDupe) fclose (fNoDupe);
-
+    
     if (killed) fprintf(outlog, "\n");
     // Put mail for links to netmail
     for (i=0; (unsigned int)i < config->linkCount; i++) {
-	if (config->links[i].msg) {
-	    link = &(config->links[i]);
-	    if (link->hisAka.point)
-		fprintf(outlog, "Write message for %u:%u/%u.%u...",
-			link->hisAka.zone ,
-			link->hisAka.net  ,
-			link->hisAka.node ,
-			link->hisAka.point);
-	    else
-		fprintf(outlog, "Write message for %u:%u/%u...",
-			link->hisAka.zone ,
-			link->hisAka.net  ,
-			link->hisAka.node);
-
-	    putMsgInArea(&(config->netMailAreas[0]), config->links[i].msg);
-	    nfree(link->msg);
-	    fprintf(outlog, "done\n");
-	}
+        if (config->links[i].msg) {
+            link = &(config->links[i]);
+            if (link->hisAka.point)
+                fprintf(outlog, "Write message for %u:%u/%u.%u...",
+                link->hisAka.zone ,
+                link->hisAka.net  ,
+                link->hisAka.node ,
+                link->hisAka.point);
+            else
+                fprintf(outlog, "Write message for %u:%u/%u...",
+                link->hisAka.zone ,
+                link->hisAka.net  ,
+                link->hisAka.node);
+            
+            putMsgInArea(&(config->netMailAreas[0]), config->links[i].msg);
+            nfree(link->msg);
+            fprintf(outlog, "done\n");
+        }
     }
-
+    
     for ( j=0; j<nareas; j++) if (needfree[nareas-1]) nfree(areas[j]);
     if (needfree) nfree(needfree);
     if (areas) nfree(areas);
-
+    
     if (killed && config->echotosslog) {
-	f=fopen(config->echotosslog, "a");
-	if (f==NULL) {
-	    fprintf(outlog, "\nCould not open or create EchoTossLogFile\n");
-	} else {
-	    fprintf(f,"%s\n", config->netMailAreas[0].areaName);
-	    fclose(f);
-	}
+        f=fopen(config->echotosslog, "a");
+        if (f==NULL) {
+            fprintf(outlog, "\nCould not open or create EchoTossLogFile\n");
+        } else {
+            fprintf(f,"%s\n", config->netMailAreas[0].areaName);
+            fclose(f);
+        }
     }
-
+    
     if (createDupe) {
-	for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
-	    dupename = createDupeFileName(area);
-	    if (stat(dupename, &stbuf)!=0) {
-		fprintf (outlog, "Creating %s\n", dupename);
-		f=fopen(dupename, "a");
-		if (f) {
-		    fclose (f);
-		} else {
-		    fprintf (outlog, "Can't create %s\n", dupename);
-		}
-	    }
-	    nfree(dupename);
-	}
+        for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
+            dupename = createDupeFileName(area);
+            if (stat(dupename, &stbuf)!=0) {
+                fprintf (outlog, "Creating %s\n", dupename);
+                f=fopen(dupename, "a");
+                if (f) {
+                    fclose (f);
+                } else {
+                    fprintf (outlog, "Can't create %s\n", dupename);
+                }
+            }
+            nfree(dupename);
+        }
     }
-
+    
     // deinit SMAPI
     MsgCloseApi();
-
+    
     disposeConfig(config);
     fprintf(outlog,"Done\n");
     return (0);
