@@ -1,3 +1,8 @@
+2003-02-10 Monday 05:27  sfpavel
+
+	* make/makefile.sun (hptkill-1_12-stable.1): Merge with current
+	branch
+
 2003-02-07 Friday 09:39  sfpavel
 
 	* Makefile (1.5), debian/changelog (1.7), debian/control (1.3),
