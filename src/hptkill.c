@@ -75,7 +75,7 @@
 
 #include <stdlib.h>
 
-#ifdef _MAKE_DLL_MVC_
+#ifndef _MAKE_DLL_MVC_
 extern char *curconfname;
 extern long curconfpos;
 #endif
@@ -208,16 +208,16 @@ int delareafromconfig(char *fileName, s_area *area) {
 	    token = strseparate(&cfgline, " \t");
 	    if (stricmp(token, "echoarea")==0) {
 		token = strseparate(&cfgline, " \t");
-		if (stricmp(token, areaName)==0) {
-		  #ifdef _MAKE_DLL_MVC_
-		   fileName = safe_strdup(getCurConfName());
-                   pos = getCurConfPos();
-                  #else
-                   fileName = safe_strdup(curconfname);
-		   pos = curconfpos;
-		  #endif
-		    break;
-		}
+        if (stricmp(token, areaName)==0) {
+#ifdef _MAKE_DLL_MVC_
+            fileName = safe_strdup(getCurConfName());
+            pos = getCurConfPos();
+#else
+            fileName = safe_strdup(curconfname);
+            pos = curconfpos;
+#endif
+            break;
+        }
 	    }
 	}
 	nfree(buff);
