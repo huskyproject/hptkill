@@ -36,7 +36,7 @@ default: all
 
 all: $(OBJS) programs
 
-%(OBJ): $(SRC_DIR)/%.c
+%$(OBJ): $(SRC_DIR)/%.c
 	$(CC) $(COPT) $(CFLAGS) $(SRC_DIR)/$*.c
 
 programs: $(OBJS)
