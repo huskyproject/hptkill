@@ -1,11 +1,24 @@
 HPTKILL 1.99 current
-This file describe changes between hptkill-1.12-stable and hptkill-1.99-current
+Changes after hptkill 1.12
 
 1. MAJOR feature improvements:
 
 2. CONFIG changes:
 
 3. IMPORTANT bugfixes:
+
+
+HPTKILL 1.12 stable
+Changes after hptkill 1.10
+
+1. MAJOR feature improvements:
+   - update queryfile when unlink from uplinks;
+   - Implement husky-standart version string generation.
+
+2. CONFIG changes:
+
+3. IMPORTANT bugfixes:
+   - general code review.
 
 
 $Id$
