@@ -1,3 +1,8 @@
+2003-10-27 Monday 12:17  stas_degteff
+
+	* src/hptkill.c (1.39): Fix variable declaration (eTime). (Thanks
+	to Any Luk'anov <andy@cbr-kem.ru>)
+
 2003-10-21 Tuesday 05:17  andr_lukyanov
 
 	* make/: makefile.mvc (1.7), makefile.mvcdll (1.9), makefile.mvcdll
