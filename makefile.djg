@@ -1,18 +1,18 @@
 # $Id$
 #
-# Legacy makefile for IBM OS/2 + EMX Runtime library
+# Legacy makefile for DOS DPMI
 # Do not support husky build enviroment
 
 SRCDIR= src/
 
 CC    = gcc
-CFLAGS= -DOS2 -I.. -c -O3
-COPT  = -O2
-LFLAGS=-Zcrtdll
+CFLAGS= -I.. -Wall -c -DNOSEMAPHORES -mcpu=i486
 
+COPT  = -O2
+LFLAGS=  -s -L../fidoconf -L../smapi
 
 OBJS = hptkill.o
-LIBS=../fidoconf/fconfemx.a ../smapi/patmat.o ../smapi/smapiemx.a
+LIBS = ../smapi/smapidjg.a ../smapi/patmat.o ../fidoconf/fconfdjg.a
 
 all: hptkill.exe
 
@@ -23,8 +23,8 @@ hptkill.exe: $(OBJS)
 	$(CC) $(LFLAGS) -o hptkill.exe $(OBJS) $(LIBS)
 
 clean:
-	-rm -f *.o
+	-del -f *.o
 
 distclean: clean
-	-rm hptkill.exe
-	-rm hptkill.?.gz
+	-del hptkill.exe
+	-del hptkill.?.gz
