@@ -63,23 +63,23 @@
 
 2003-02-11 Tuesday 08:50  sfpavel
 
-	* debian/docs (1.1): file docs was initially added on branch
-	hptkill-1_12-stable.
-
-2003-02-11 Tuesday 08:50  sfpavel
-
 	* debian/: changelog, control, docs (hptkill-1_12-stable.[1,1,1]):
 	New debian version
 
-2003-02-11 Tuesday 08:47  sfpavel
+2003-02-11 Tuesday 08:50  sfpavel
 
-	* VERSION (1.1): file VERSION was initially added on branch
+	* debian/docs (1.1): file docs was initially added on branch
 	hptkill-1_12-stable.
 
 2003-02-11 Tuesday 08:47  sfpavel
 
 	* HISTORY, VERSION (hptkill-1_12-stable.[1,1]): Update
 	documentation
+
+2003-02-11 Tuesday 08:47  sfpavel
+
+	* VERSION (1.1): file VERSION was initially added on branch
+	hptkill-1_12-stable.
 
 2003-02-11 Tuesday 08:47  sfpavel
 
