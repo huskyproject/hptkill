@@ -1,65 +1,37 @@
 # $Id$
-#
-# Legacy makefile for Cygwin/mingw
-# Do not support husky build enviroment
+# Makefile to build HPTKILL/win32 with Mingw32 from Cygwin.
+# No support for the Husky build environment.
 
-SRC_DIR	= ../src
+# include Husky-Makefile-Config,
+# copy this file from ../../huskybse/huskymak.cfg.cyg
+include ../../huskymak.cfg
 
-PREFIX	= /usr/local
+include makefile.inc
 
-CC	= gcc
-RM	= rm
-RMOPT	= -f
+# includes directories
+CINCL= -I$(H_DIR) -I../../huskylib -I../../smapi -I../../fidoconf
 
-CFLAGS	= -D__NT__ -DWIN32 -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
-CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
-COPT	= -O2
-LFLAGS	= -L../../smapi/make -L../../fidoconf -L../../huskylib/make -mno-cygwin 
+# libraries need to build binary file
+LIBS	= ../../fidoconf/make/$(LIBPREFIX)fidoconfig$(LIBSUFFIX)$(_LIB) \
+	  ../../smapi/make/$(LIBPREFIX)smapi$(LIBSUFFIX)$(_LIB) \
+	  ../../huskylib/make/$(LIBPREFIX)husky$(LIBSUFFIX)$(_LIB)
 
-LIBS	= -lfidoconfigcyg -lsmapicyg -lhuskycyg
+READMEFILES= ../ChangeLog ../VERSION ../HISTORY
 
-EXENAME	= hptkill
-EXENAMEFLAG = -o
+default:
+	@echo
+	@echo Run \'make programs\' to build static version of programs \($(PROGRAMS)\)
+	@echo
+	@echo Run \'make all\' to build all above
 
-OBJ	= .o
-EXE	= .exe
+all:	programs
 
-OBJS	= $(EXENAME)$(OBJ)
-TARGET	= $(EXENAME)$(EXE)
+programs: $(PROGRAMS)
 
-BINDIR	= $(PREFIX)/bin
-DOCDIR	= $(PREFIX)/doc
-IBOPT	= -m 555 -c
-DIROPT	= -d -m 755
-INSTALL	= install
+%$(_OBJ): $(_SRC_DIR)%$(_C)
+	@echo Compiling $<
+	@$(CC) $(CFLAGS) $(CDEFS) $(CINCL) $(OPTCFLAGS) $<
 
-default: all
-
-all: programs
-
-%$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(COPT) $(CFLAGS) $(CINCL) $(SRC_DIR)/$*.c
-
-programs: $(OBJS)
-	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
-
-man:
-
-doc: man
-	man2html$(EXE) <../$(EXENAME).1 >$(EXENAME).html
-
-clean:
-	-$(RM) $(RMOPT) *$(OBJ)
-
-distclean: clean
-	-$(RM) $(RMOPT) $(TARGET)
-	-$(RM) $(RMOPT) $(EXENAME).html
-
-install: programs doc
-	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
-	$(INSTALL) $(IBOPT) ../$(EXENAME).1 $(PREFIX)/man/man1
-	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
-
-uninstall:
-	-$(RM) $(RMOPT) $(BINDIR)/$(TARGET)
-	-$(RM) $(RMOPT) $(DOCDIR)/$(EXENAME).html
+$(PROGRAMS): $(OBJS)
+	@echo Create $(PROGRAMS)
+	@$(CC) $(STRIP) $(CFLAGS) $(CDEFS) $(CINCL) $(EXENAMEFLAG) $@ $^ $(LIBS)

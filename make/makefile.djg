@@ -1,65 +1,38 @@
 # $Id$
-#
-# Legacy makefile for DOS DPMI
-# Do not support husky build enviroment
+# Makefile to build HPTKILL/dpmi with gcc 3.x.x from DJGPP v2.03.
+# No support for the Husky build environment.
 
-SRC_DIR	= ../src
+# include Husky-Makefile-Config,
+# copy this file from ../../huskybse/huskymak.cfg.djg
+include ../../huskymak.cfg
 
-PREFIX	= /fidonet
+include makefile.inc
 
-CC	= gcc
-RM	= del
-RMOPT	=
+# includes directories
+CINCL= -I$(H_DIR) -I../../huskylib -I../../smapi -I../../fidoconf
 
-CFLAGS	= -Wall -c -mcpu=i486
-CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
-LFLAGS	= -s
-COPT	= -O2
+# libraries need to build binary file
+LIBS	= ../../fidoconf/make/$(LIBPREFIX)fconf$(LIBSUFFIX)$(_LIB) \
+	  ../../smapi/make/$(LIBPREFIX)smapi$(LIBSUFFIX)$(_LIB) \
+	  ../../huskylib/make/$(LIBPREFIX)husky$(LIBSUFFIX)$(_LIB)
 
-LIBS	= ../../fidoconf/make/fconfdjg.a ../../smapi/make/smapidjg.a ../../huskylib/make/huskydjg.a
+READMEFILES= ../ChangeLog ../VERSION ../HISTORY
 
-EXENAME	= hptkill
-EXENAMEFLAG = -o
+default:
+	@echo
+	@echo Run \'make programs\' to build static version of programs \($(PROGRAMS)\)
+	@echo
+	@echo Run \'make all\' to build all above
 
-OBJ	= .o
-EXE	= .exe
+all:	programs
 
-OBJS	= $(EXENAME)$(OBJ)
-TARGET	= $(EXENAME)$(EXE)
+programs: $(PROGRAMS)
 
-BINDIR	= $(PREFIX)/bin
-DOCDIR	= $(PREFIX)/doc
-IBOPT	= 
-DIROPT	=
-INSTALL	= install
+%$(_OBJ): $(_SRC_DIR)%$(_C)
+	@echo Compiling $<
+	@$(CC) $(CFLAGS) $(CDEFS) $(CINCL) $(OPTCFLAGS) $<
 
-default: all
-
-all: $(OBJS) programs
-
-%$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(COPT) $(CFLAGS) $(CINCL) $(SRC_DIR)/$*.c
-
-programs: $(OBJS)
-	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
-
-man:
-
-doc: man
-	man2html$(EXE) <../$(EXENAME).1 >$(EXENAME).htm
-
-clean:
-	-$(RM) $(RMOPT) *$(OBJ)
-
-distclean: clean
-	-$(RM) $(RMOPT) $(TARGET)
-	-$(RM) $(RMOPT) $(EXENAME).htm
-
-install: programs doc
-	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
-	$(INSTALL) $(IBOPT) ../$(EXENAME).1 $(DOCDIR)
-	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
-
-uninstall:
-	-$(RM) $(RMOPT) $(BINDIR)/$(TARGET)
-	-$(RM) $(RMOPT) $(DOCDIR)/$(EXENAME).htm
+$(PROGRAMS): $(OBJS)
+	@echo Create $(PROGRAMS)
+	@$(CC) $(STRIP) $(CFLAGS) $(CDEFS) $(CINCL) $(EXENAMEFLAG) $@ $^ $(LIBS)
+	@strip$(_EXE) $@
