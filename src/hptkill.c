@@ -448,7 +448,7 @@ int makeRequestToLink (char *areatag, s_link *link) {
 
 	date = localtime(&curTime);
 
-	strftime(xmsg->__ftsc_date, 21, "%d %b %y  %H:%M:%S", date);
+	fts_time(xmsg->__ftsc_date, date);
 
 	ASCII_Date_To_Binary(xmsg->__ftsc_date, (union stamp_combo *) &(xmsg->date_written));
 	TmDate_to_DosDate(date, &dosdate);
