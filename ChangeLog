@@ -1,3 +1,7 @@
+2003-02-08 Saturday 21:03  d_sergienko
+
+	* make/makefile.sun (1.4): swap library linking order
+
 2003-02-07 Friday 09:39  sfpavel
 
 	* Makefile (1.5), debian/changelog (1.7), debian/control (1.3),
