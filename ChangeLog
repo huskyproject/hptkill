@@ -1,3 +1,7 @@
+2005-03-20 Sunday 01:46  sfpavel
+
+	* debian/changelog (hptkill-1_12-stable.8): 1.4-RC3 release
+
 2004-06-07 Monday 11:25  sfpavel
 
 	* debian/compat (1.1): file compat was initially added on branch
