@@ -15,7 +15,7 @@ RANLIB	= WLINK
 RM	= del
 RMOPT	=
 
-CFLAGS  = -zq -wx -bt=nt -i..\h -oneatx -5
+CFLAGS  = -zq -wx -bt=nt -i..\h -i..\.. -oneatx -5
 LFLAGS  = system nt FILE
 
 LIBS	= Library ..\..\smapi\smapiwcw.lib, ..\..\fidoconf\fconfwcw.lib
