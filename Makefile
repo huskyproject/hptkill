@@ -1,3 +1,15 @@
+# $Id$
+#============================================================================
+# Common makefile for hptkill
+#
+# This file is part of hptkill, part of the Husky fidonet software project
+# For latest version see: http://husky.physcip.uni-stuttgart.de
+#
+# Use with GNU version of make
+#
+# Require: husky enviroment
+#
+
 # include Husky-Makefile-Config
 ifeq ($(DEBIAN), 1)
 # Every Debian-Source-Paket has one included.
@@ -37,7 +49,6 @@ clean:
 	-$(RM) $(RMOPT) *$(OBJ)
 	-$(RM) $(RMOPT) *~
 	-$(RM) $(RMOPT) core
-	-$(RM) $(RMOPT) hptkill$(EXE)
 
 distclean: clean
 	-$(RM) $(RMOPT) hptkill$(EXE)
