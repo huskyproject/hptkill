@@ -18,7 +18,7 @@ else
 include ../huskymak.cfg
 endif
 
-OBJS    = hptkill$(OBJ)
+OBJS    = hptkill$(_OBJ)
 SRC_DIR = src/
 
 ifeq ($(DEBUG), 1)
@@ -37,31 +37,31 @@ endif
 
 CDEFS=-D$(OSTYPE) $(ADDCDEFS)
 
-all: $(OBJS) hptkill$(EXE) hptkill.1.gz
+all: $(OBJS) hptkill$(_EXE) hptkill.1.gz
 
-%$(OBJ): $(SRC_DIR)%.c
+%$(_OBJ): $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
 
-hptkill$(EXE): $(OBJS)
-	$(CC) $(LFLAGS) -o hptkill$(EXE) $(OBJS) $(LIBS)
+hptkill$(_EXE): $(OBJS)
+	$(CC) $(LFLAGS) -o hptkill$(_EXE) $(OBJS) $(LIBS)
 
 hptkill.1.gz : hptkill.1
 	gzip -9c hptkill.1 > hptkill.1.gz
 
 clean:
-	-$(RM) $(RMOPT) *$(OBJ)
+	-$(RM) $(RMOPT) *$(_OBJ)
 	-$(RM) $(RMOPT) *~
 	-$(RM) $(RMOPT) core
 
 distclean: clean
-	-$(RM) $(RMOPT) hptkill$(EXE)
+	-$(RM) $(RMOPT) hptkill$(_EXE)
 	-$(RM) $(RMOPT) hptkill.1.gz
 
-install: hptkill$(EXE) hptkill.1.gz
-	$(INSTALL) $(IBOPT) hptkill$(EXE) $(BINDIR)
+install: hptkill$(_EXE) hptkill.1.gz
+	$(INSTALL) $(IBOPT) hptkill$(_EXE) $(BINDIR)
 	$(INSTALL) $(IMOPT) hptkill.1.gz $(MANDIR)/man1
 
 uninstall:
-	$(RM) $(RMOPT) $(BINDIR)$(DIRSEP)hptkill$(EXE)
+	$(RM) $(RMOPT) $(BINDIR)$(DIRSEP)hptkill$(_EXE)
 	$(RM) $(RMOPT) $(MANDIR)$(DIRSEP)man1$(DIRSEP)hptkill.1.gz
 
