@@ -318,7 +318,7 @@ void update_queue(s_area *area)
     fclose(queryFile);
 }
 
-void delete_area(s_area *area)
+void husky_delete_area(s_area *area)
 {
     char *an = area->areaName;
     unsigned int i;
@@ -645,7 +645,7 @@ int main(int argc, char **argv) {
                     }
                 }
                 if (delArea) {
-                    delete_area(area);
+                    husky_delete_area(area);
                     killed++;
                     found++;
                     if (delFromConfig) { /* Area is removed from areas array! */
@@ -660,7 +660,7 @@ int main(int argc, char **argv) {
         if (killPass==0 && killLowLink==0) {
             for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
                 if (patimat(area->areaName, areas[j])==1){
-                    delete_area(area);
+                    husky_delete_area(area);
                     killed++;
                     found++;
                     if (delFromConfig) { /* Area is removed from areas array! */
