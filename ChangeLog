@@ -1,3 +1,7 @@
+2003-05-14 Wednesday 15:31  nssoft
+
+	* Makefile (1.8): Change OBJ to _OBJ, and EXE to _EXE.
+
 2003-05-12 Monday 06:58  mche
 
 	* src/hptkill.c (1.38): fix reallocation array of links
