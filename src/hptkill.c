@@ -338,10 +338,10 @@ int makeRequestToLink (char *areatag, s_link *link) {
 	xmsg->dest.net   = link->hisAka.net  ;
 	xmsg->dest.node  = link->hisAka.node ;
 	xmsg->dest.point = link->hisAka.point;
-	strcpy(xmsg->from, config->sysop);
+	strcpy( (char*)(xmsg->from), (char*)(config->sysop) );
 
-	strcpy(xmsg->to, link->RemoteRobotName ? link->RemoteRobotName : "AreaFix");
-	strcpy(xmsg->subj, link->areaFixPwd ? link->areaFixPwd : "\0");
+	strcpy( (char*)(xmsg->to), (char*)(link->RemoteRobotName ? link->RemoteRobotName : "AreaFix") );
+	strcpy( (char*)(xmsg->subj), (char*)(link->areaFixPwd ? link->areaFixPwd : "\0") );
 
 	xmsg->attr = MSGLOCAL|MSGPRIVATE;
 
