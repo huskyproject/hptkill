@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #ifdef UNIX
@@ -33,31 +34,20 @@
 #endif
 
 #include <fcntl.h>
+
 #ifdef __EMX__
-#include <share.h>
-#include <sys/types.h>
+#   include <share.h>
+#   include <sys/types.h>
 #endif
 #include <sys/stat.h>
 
 #ifdef __WATCOMC__
-#include <fcntl.h>
-#define AW_S_ISDIR(a) (((a) & S_IFDIR) != 0)
-#include <process.h>
-#include <dos.h>
-#endif
-#include <fcntl.h>
-#include <errno.h>
-
-#if defined(__TURBOC__) || defined(__IBMC__) || (defined(_MSC_VER) && (_MSC_VER >= 1200))
-
-#include <io.h>
-#include <fcntl.h>
-
-#if !defined(S_ISDIR)
-#define S_ISDIR(a) (((a) & S_IFDIR) != 0)
+#   include <fcntl.h>
+#   define AW_S_ISDIR(a) (((a) & S_IFDIR) != 0)
+#   include <process.h>
+#   include <dos.h>
 #endif
 
-#endif
 
 #include <time.h>
 
@@ -66,6 +56,8 @@
 #include <fidoconf/fidoconf.h>
 #include <fidoconf/common.h>
 #include <fidoconf/xstr.h>
+#include <fidoconf/log.h>
+#include <fidoconf/afixcmd.h>
 
 #include <string.h>
 
@@ -74,7 +66,6 @@
 #include <share.h>
 #endif
 
-#include <stdlib.h>
 #include "cvsdate.h"
 
 s_fidoconfig *config;
@@ -127,125 +118,60 @@ void usage(void) {
 
 }
 
-void exit_err(char *text)
-{
-    fprintf(outlog, "exiting: %s\n", text);
-    exit(1);
-}
+int changeconfig(char *fileName, s_area *area) {
+    char *cfgline=NULL, *token=NULL, *tmpPtr=NULL, *line=NULL, *buff=0;
+    long strbeg = 0, strend = -1;
+    int rc=0;
 
+    char *areaName = area->areaName;
 
-#if defined(__TURBOC__) || defined(__IBMC__) || defined(__WATCOMC__) || (defined(_MSC_VER) && (_MSC_VER >= 1200))
+    w_log(LL_FUNC, __FILE__ "::changeconfig(%s,...)", fileName);
 
-int truncate(const char *fileName, long length)
-{
-    int fd = open(fileName, O_RDWR | O_BINARY);
-    if (fd != -1) {
-	lseek(fd, length, SEEK_SET);
-	chsize(fd, tell(fd));
-	close(fd);
-	return 1;
-    };
-    return 0;
-}
+    if (init_conf(fileName))
+		return -1;
 
-int fTruncate( int fd, long length )
-{
-    if( fd != -1 )
-	{
-	    lseek(fd, length, SEEK_SET);
-	    chsize(fd, tell(fd) );
-	    return 1;
-	}
-    return 0;
-}
-
-#endif
-
-#ifdef __MINGW32__
-int fTruncate (int fd, long length)
-{
-    if( fd != -1 )
-	{
-	    lseek(fd, length, SEEK_SET);
-	    chsize(fd, tell(fd) );
-	    return 1;
-	}
-    return 0;
-}
-#endif
-
-int delareafromconfig(char *fileName, s_area *area) {
-    FILE *f;
-    char *cfgline, *token, *areaName, *buff;
-    long pos=-1, lastpos, endpos, len;
-
-    areaName = area->areaName;
-
-    if (init_conf(fileName)) return 1;
-
-    while ((buff = configline()) != NULL) {
-	buff = trimLine(buff);
-	buff = stripComment(buff);
-	if (buff[0] != 0) {
-	    buff = cfgline = shell_expand(buff);
-	    token = strseparate(&cfgline, " \t");
-	    if (stricmp(token, "echoarea")==0) {
-		token = strseparate(&cfgline, " \t");
-    		if (stricmp(token, areaName)==0) {
-        	    fileName = sstrdup(getCurConfName());
-        	    pos = getCurConfPos();
-        	    break;
-    		}
-	    }
-	}
-	nfree(buff);
+    while ((cfgline = configline()) != NULL) {
+        line = sstrdup(cfgline);
+        line = trimLine(line);
+        line = stripComment(line);
+        if (line[0] != 0) {
+            line = shell_expand(line);
+            line = tmpPtr = vars_expand(line);
+            token = strseparate(&tmpPtr, " \t");
+            if (stricmp(token, "echoarea")==0) {
+                token = strseparate(&tmpPtr, " \t");
+                if (*token=='\"' && token[strlen(token)-1]=='\"' && token[1]) {
+                    token++;
+                    token[strlen(token)-1]='\0';
+                }
+                if (stricmp(token, areaName)==0) {
+                    fileName = sstrdup(getCurConfName());
+                    strend = get_hcfgPos();
+                    if(strbeg > strend) strbeg = 0;
+                    break;
+                }
+            }
+        }
+        strbeg = get_hcfgPos();
+        w_log(LL_DEBUGF, __FILE__ ":%u:changeconfig() strbeg=%l", __LINE__, strbeg);
+        nfree(line);
+        nfree(cfgline);
     }
     close_conf();
-    if (pos == -1) return 1; // impossible
-    nfree(buff);
-
-    if ((f=fopen(fileName,"r+b")) == NULL)
-	{
-	    fprintf(outlog, "\ncannot open config file %s \n", fileName);
-	    nfree(fileName);
-	    return 1;
-	}
-    fseek(f, pos, SEEK_SET);
-    cfgline = readLine(f);
-    if (cfgline == NULL) {
-	fclose(f);
-	nfree(fileName);
-	return 1;
+    nfree(line);
+    if (strend == -1) { /*  impossible   error occurred */
+        nfree(cfgline);
+        nfree(fileName);
+        return -1;
     }
 
-    fprintf(outlog, " %s...", fileName);
-
-    lastpos = ftell(f);
-    fseek(f, 0, SEEK_END);
-    endpos = ftell(f);
-    if (endpos>lastpos) {
-	buff = (char*) smalloc((size_t) (endpos-lastpos));
-	memset(buff, '\0', (size_t) (endpos-lastpos));
-	fseek(f, lastpos, SEEK_SET);
-	len = fread(buff, sizeof(char), (size_t) endpos-lastpos, f);
-	fseek(f, pos, SEEK_SET);
-	fwrite(buff, sizeof(char), (size_t) len, f);
-	nfree(buff);
-    } else {
-	len=0;
-    }
-#if defined(__WATCOMC__) || defined(__MINGW32__)
-    fflush( f );
-    fTruncate( fileno(f), pos+len);
-    fflush( f );
-#else
-    truncate(fileName, pos+len);
-#endif
+    InsertCfgLine(fileName, cfgline, strbeg, strend);
     nfree(cfgline);
     nfree(fileName);
-    fclose(f);
     return 0;
 }
+
+
 
 int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 {
@@ -483,7 +409,7 @@ void delete_area(s_area *area)
     /* remove area from config-file */
     if (delFromConfig) {
 	fprintf(outlog, "   deleting from config");
-	if (delareafromconfig (getConfigFileName(),  area) != 0)
+	if (changeconfig (getConfigFileName(),  area) != 0)
 	    fprintf(outlog, " ERROR!\n");
 	else
 	    fprintf(outlog, " ok\n");
@@ -513,7 +439,8 @@ void delete_area(s_area *area)
 
 int main(int argc, char **argv) {
 
-    int i, j, k;
+    int i, j;
+    UINT k;
     struct _minf m;
     char **areas = NULL;
     char *needfree = NULL;
