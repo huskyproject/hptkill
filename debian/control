@@ -1,0 +1,12 @@
+Source: hptkill
+Section: contrib/mail
+Priority: optional
+Maintainer: Joerg Jaspert (JJ) <joerg@goliathbbs.dnsalias.net>
+Build-Depends: debhelper (>> 3.0.0), libsmapi2-dev(>=2.1.0-1), libfidoconf0-dev(>= 0.13-1)
+Standards-Version: 3.5.2
+
+Package: hptkill
+Architecture: any
+Depends: ${shlibs:Depends}, hpt
+Description:  Area killer for High Portable Tosser (hpt)
+ Area Killer for hpt.
