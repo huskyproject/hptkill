@@ -17,7 +17,7 @@ CDEFS	= -DUNIX
 COPT	= -O3 -c -g
 LFLAGS	= -s -L../../fidoconf -L../../smapi
 
-LIBS	= -lsmapibsd -lfidoconfigbsd
+LIBS	= -lfidoconfigbsd -lsmapibsd   
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
