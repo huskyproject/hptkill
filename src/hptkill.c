@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.03";
+char *version = "1.04";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -93,6 +93,7 @@ e_senduns sendUnSubscribe = eNodes;
 int     delFromConfig = 0;
 int     eraseBase = 1;
 int     killSend = 0;
+int     killPass = 0;
 
 typedef struct xmsgtxt {
         XMSG xmsg;
@@ -104,7 +105,7 @@ void usage(void) {
 
    fprintf(outlog, "hptkill %s\n", version);
    fprintf(outlog, "Areas killing utility\n");
-   fprintf(outlog, "Usage:\n hptkill [-1|-n|-a] [-k] [-f file] [areaNameMask ...]\n");
+   fprintf(outlog, "Usage:\n hptkill [-1|-n|-a] [-k] [-p] [-f file] [areaNameMask ...]\n");
    fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
    fprintf(outlog, "   -n - don't send unsubscribe message\n");
    fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
@@ -113,6 +114,7 @@ void usage(void) {
    fprintf(outlog, "   -f file - read areas list from file in addition to args\n");
    fprintf(outlog, "   -f -    - read areas list from stdin in addition to args\n");
    fprintf(outlog, "   -k - set Kill/Sent attribute to messages for links\n");
+   fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
    fprintf(outlog, "\nDefault settings:\n");
    fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
    fprintf(outlog, " -  leave config unchanged\n");
@@ -687,6 +689,11 @@ int main(int argc, char **argv) {
                 killSend = 1;
                 break;
 
+             case 'p': /* kill passthrough areas with 1 link*/
+             case 'P':
+				 killPass++;
+				 break;
+
              default:
                 usage();
                 exit(-1);
@@ -701,7 +708,18 @@ int main(int argc, char **argv) {
      }
    }
 
-   if (nareas == 0) usage();
+   if (nareas == 0) {
+	   if (killPass) {
+		   nareas++;
+		   areas = (char **)realloc ( areas, nareas*sizeof(char *));
+		   areas[nareas-1] = "*";
+		   needfree = (char *)safe_realloc ( needfree, nareas*sizeof(char));
+		   needfree[nareas-1] = 0;
+	   } else {
+		   usage();
+		   exit (-1);
+	   }
+   }
 
    fprintf(outlog,"hptkill %s\n", version);
 
@@ -720,23 +738,28 @@ int main(int argc, char **argv) {
       found = 0;
 
       for (i=0; i < config->echoAreaCount; i++) {
-         if (patimat(config->echoAreas[i].areaName, areas[j])==1){
-            delete_area(&(config->echoAreas[i]));
-            killed++;
-            found++;
-         }
+		  if (patimat(config->echoAreas[i].areaName, areas[j])==1){
+			  if (killPass==0 || (
+				  (config->echoAreas[i].msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH &&
+				  config->echoAreas[i].downlinkCount <= 1 )) {
+				  delete_area(&(config->echoAreas[i]));
+				  killed++;
+				  found++;
+			  }
+		  }
       }
 
-      for (i=0; i < config->localAreaCount; i++) {
-         if (patimat(config->localAreas[i].areaName, areas[j])==1){
-            delete_area(&(config->localAreas[i]));
-            killed++;
-            found++;
-         }
-      }
+	  if (killPass==0) {
+		  for (i=0; i < config->localAreaCount; i++) {
+			  if (patimat(config->localAreas[i].areaName, areas[j])==1){
+				  delete_area(&(config->localAreas[i]));
+				  killed++;
+				  found++;
+			  }
+		  }
 
-      if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
-
+		  if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
+	  }
    }
 
    if (killed) fprintf(outlog, "\n");

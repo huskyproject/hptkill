@@ -1,5 +1,10 @@
-hptkill 1.02
+hptkill 1.04
 ---------	
+
+----- cvs ci ------
+Sun May 20 10:34:45 NOVST 2001
+max (patch from Serguei Revtov):
+* -p option: kill passthrough areas with <=1 links
 
 ----- cvs ci ------
 Thu Mar 22 12:05:13 MSK 2001
