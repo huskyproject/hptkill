@@ -1,3 +1,7 @@
+2003-05-11 Sunday 17:41  mche
+
+	* src/hptkill.c (1.37): fix reallocation array of links
+
 2003-05-10 Saturday 11:08  mche
 
 	* src/hptkill.c (1.36): fix hptkill -pp
