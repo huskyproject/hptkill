@@ -1,3 +1,7 @@
+2002-09-30 Monday 21:30  sfpavel
+
+	* makefile.emx (1.1): Add makefile.emx
+
 2002-09-01 Sunday 20:01  stas_degteff
 
 	* makefile.bsd (1.2): Fix makefile foe FreeBSD/NetBSD/OpenBSD
