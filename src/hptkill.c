@@ -82,11 +82,12 @@ int     killSend = 0;
 int     killPass = 0;
 int     createDupe = 0;
 
+/*
 typedef struct xmsgtxt {
 	XMSG xmsg;
 	char *text;
 } s_xmsgtxt;
-
+*/
 
 void usage(void) {
 
@@ -164,55 +165,38 @@ int changeconfig(char *fileName, s_area *area) {
         nfree(fileName);
         return -1;
     }
-
-    InsertCfgLine(fileName, cfgline, strbeg, strend);
     nfree(cfgline);
+    InsertCfgLine(fileName, cfgline, strbeg, strend);
     nfree(fileName);
     return 0;
 }
 
 
 
-int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
+int putMsgInArea(s_area *echo, s_message *msg)
 {
     char *ctrlBuff, *textStart, *textWithoutArea;
     UINT textLength;
     HAREA harea;
     HMSG  hmsg;
-    char *slash;
+    XMSG  msgHeader;
     int rc = 0;
-
-    // create Directory Tree if necessary
-    if (echo->msgbType == MSGTYPE_SDM)
-	_createDirectoryTree(echo->fileName);
-    else if (echo->msgbType==MSGTYPE_PASSTHROUGH) {
-	fprintf(outlog, "Can't put message to passthrough area %s!",
-		echo->areaName);
-	return rc;
-    } else {
-	// squish or jam area
-	slash = strrchr(echo->fileName, PATH_DELIM);
-	if (slash) {
-	    *slash = '\0';
-	    _createDirectoryTree(echo->fileName);
-	    *slash = PATH_DELIM;
-	}
-    }
 
     harea = MsgOpenArea((UCHAR *) echo->fileName, MSGAREA_CRIFNEC, (word)(echo->msgbType));
     if (harea != NULL) {
 	hmsg = MsgOpenMsg(harea, MOPEN_CREATE, 0);
 	if (hmsg != NULL) {
 
-	    textWithoutArea = text;
-	    textLength = strlen(text);
+	    textWithoutArea = msg->text;
+	    textLength = strlen(textWithoutArea);
 
 	    ctrlBuff = (char *) CopyToControlBuf((UCHAR *) textWithoutArea,
 						 (UCHAR **) &textStart,
 						 &textLength);
 	    // textStart is a pointer to the first non-kludge line
+        msgHeader = createXMSG(config,msg, NULL, MSGLOCAL ,NULL);
 
-	    MsgWriteMsg(hmsg, 0, xmsg, (byte *) textStart, (dword) strlen(textStart), (dword) strlen(textStart), (dword)strlen(ctrlBuff), (byte *)ctrlBuff);
+	    MsgWriteMsg(hmsg, 0, &msgHeader, (UCHAR*)textStart, (dword)textLength, (dword)textLength, (dword)strlen(ctrlBuff), (byte *)ctrlBuff);
 
 	    MsgCloseMsg(hmsg);
 	    nfree(ctrlBuff);
@@ -232,88 +216,23 @@ int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 
 
 int makeRequestToLink (char *areatag, s_link *link) {
-    s_xmsgtxt  *xmsgtxt;
-    XMSG *xmsg;
-    time_t curTime;
-    static time_t preTime=0L;
-    struct tm *date;
-    union stamp_combo dosdate;
+    s_message *msg;
 
-    if (link->hisAka.point)
-	fprintf(outlog, "  Make message for %u:%u/%u.%u...",
-		link->hisAka.zone ,
-		link->hisAka.net  ,
-		link->hisAka.node ,
-		link->hisAka.point);
-    else
-	fprintf(outlog, "  Make message for %u:%u/%u...",
-		link->hisAka.zone ,
-		link->hisAka.net  ,
-		link->hisAka.node);
-
-    if (link->msg == NULL) {
-	xmsgtxt = (s_xmsgtxt *) scalloc( 1, sizeof(s_xmsgtxt));
-	link->msg = xmsgtxt;
-
-	xmsg = &(xmsgtxt->xmsg);
-
-	xmsg->orig.zone  = link->ourAka->zone ;
-	xmsg->orig.net   = link->ourAka->net  ;
-	xmsg->orig.node  = link->ourAka->node ;
-	xmsg->orig.point = link->ourAka->point;
-	xmsg->dest.zone  = link->hisAka.zone ;
-	xmsg->dest.net   = link->hisAka.net  ;
-	xmsg->dest.node  = link->hisAka.node ;
-	xmsg->dest.point = link->hisAka.point;
-	strcpy( (char*)(xmsg->from), (char*)(config->sysop) );
-
-	strcpy( (char*)(xmsg->to), (char*)(link->RemoteRobotName ? link->RemoteRobotName : "AreaFix") );
-	strcpy( (char*)(xmsg->subj), (char*)(link->areaFixPwd ? link->areaFixPwd : "\0") );
-
-	xmsg->attr = MSGLOCAL|MSGPRIVATE;
-
-	if (killSend) xmsg->attr |= MSGKILL;
-
-	if (xmsg->orig.point) xscatprintf(&(xmsgtxt->text), "\001FMPT %d\r", xmsg->orig.point);
-	if (xmsg->dest.point) xscatprintf(&(xmsgtxt->text), "\001TOPT %d\r", xmsg->dest.point);
-
-	curTime = time(NULL);
-	while (curTime == preTime) {
-	    sleep(1);
-	    curTime = time(NULL);
-	}
-	preTime = curTime;
-
-	if (link->ourAka->point)
-	    xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u.%u %08lx\r",
-			link->ourAka->zone,
-			link->ourAka->net,
-			link->ourAka->node,
-			link->ourAka->point,
-			(unsigned long) curTime);
-	else
-	    xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u %08lx\r",
-			link->ourAka->zone,
-			link->ourAka->net,
-			link->ourAka->node,
-			(unsigned long) curTime);
-
-	date = localtime(&curTime);
-
-	fts_time(xmsg->__ftsc_date, date);
-
-	ASCII_Date_To_Binary(xmsg->__ftsc_date, (union stamp_combo *) &(xmsg->date_written));
-	TmDate_to_DosDate(date, &dosdate);
-	xmsg->date_arrived = dosdate.msg_st;
+    if (link->msg == NULL) 
+    {
+        msg = makeMessage(link->ourAka, &(link->hisAka), config->sysop,
+            link->RemoteRobotName ? link->RemoteRobotName : "areafix",
+            link->areaFixPwd ? link->areaFixPwd : "\x00", 1,
+            config->areafixReportsAttr);
+        msg->text = createKludges(config, NULL, link->ourAka, &(link->hisAka),
+            "hptkill");
+        if (config->areafixReportsFlags)
+            xstrscat(&(msg->text), "\001FLAGS ", config->areafixReportsFlags, "\r",NULL);
+        link->msg = msg;
     } else {
-	fprintf(outlog, "adding...");
-	xmsgtxt = (s_xmsgtxt *) link->msg;
+        msg = link->msg;
     }
-
-    xscatprintf(&(xmsgtxt->text), "-%s\r", areatag);
-
-    fprintf(outlog, "done\n");
-
+    xscatprintf(&(msg->text), "-%s\r", areatag);
     return 0;
 }
 
@@ -448,7 +367,7 @@ int main(int argc, char **argv) {
     int nareas=0;
     int found = 0;
     FILE *f = NULL;
-    s_xmsgtxt *xmsgtxt = NULL;
+    //s_xmsgtxt *xmsgtxt = NULL;
     s_link *link = NULL;
     int killed = 0;
     int checkPaused = 0;
@@ -727,8 +646,8 @@ int main(int argc, char **argv) {
 			link->hisAka.zone ,
 			link->hisAka.net  ,
 			link->hisAka.node);
-	    xmsgtxt = (s_xmsgtxt *) link->msg;
-	    putMsgInArea(&(config->netMailAreas[0]), &(xmsgtxt->xmsg), xmsgtxt->text);
+
+	    putMsgInArea(&(config->netMailAreas[0]), config->links[i].msg);
 	    nfree(link->msg);
 	    fprintf(outlog, "done\n");
 	}
