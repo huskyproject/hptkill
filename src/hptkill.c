@@ -111,6 +111,8 @@ void usage(void) {
     fprintf(outlog, "   -k - set Kill/Sent attribute to messages for links\n");
     fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
     fprintf(outlog, "   -pp - same as -p including paused links\n");
+    fprintf(outlog, "   -y - find & kill ANY echoareas with <=1 links\n");
+    fprintf(outlog, "   -yp - same as -y including paused links\n");
     fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
     fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
     fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
@@ -522,6 +524,7 @@ int main(int argc, char **argv) {
     int killed = 0;
     int checkPaused = 0;
     int killNoLink = 0;
+    int killLowLink = 0;
     int killOld = 0;
     int killWithoutDupes = 0;
     int delArea = 0;
@@ -612,6 +615,12 @@ int main(int argc, char **argv) {
 		    if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
 		    break;
 
+		case 'y': /* kill ANY areas with <=1 link*/
+		case 'Y':
+		    killLowLink++;
+		    if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
+		    break;
+
 		case 'o': /* kill passthrough area with dupebase older 'days' days */
 		case 'O':
 		    if (argv[i][1]=='O') killWithoutDupes++;
@@ -655,7 +664,7 @@ int main(int argc, char **argv) {
     }
 
     if (nareas == 0) {
-	if (killPass) {
+	if (killPass || killLowLink) {
 	    nareas++;
 	    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
 	    areas[nareas-1] = "*";
@@ -723,6 +732,15 @@ int main(int argc, char **argv) {
 			}
 		    }
 		}
+		if (killLowLink) {
+	            if (area->downlinkCount <= 1) delArea++;
+		    else if (checkPaused) {
+		        delArea = 2; // if two links w/o pause - leave untouched
+		        for (k=0; k < area->downlinkCount && delArea; k++) {
+		          if (area->downlinks[k]->link->Pause == 0) delArea--;
+		        }
+		    }
+		}
 		if (delArea) {
 		    delete_area(area);
 		    killed++;
@@ -736,7 +754,7 @@ int main(int argc, char **argv) {
 	    }
 	}
 
-	if (killPass==0) {
+	if (killPass==0 && killLowLink==0) {
 	    for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
 		if (patimat(area->areaName, areas[j])==1){
 		    delete_area(area);
