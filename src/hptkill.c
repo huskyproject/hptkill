@@ -25,33 +25,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <process.h>
+#include <string.h>
 
-#ifdef UNIX
+
+#include <smapi/compiler.h>
+
+#ifdef HAS_UNISTD_H
 #include <unistd.h>
 #include <strings.h>
-#else
+#endif
+#ifdef HAS_IO_H
 #include <io.h>
 #endif
 
-#include <fcntl.h>
-
-#ifdef __EMX__
+#ifdef HAS_SHARE_H
 #   include <share.h>
-#   include <sys/types.h>
-#endif
-#include <sys/stat.h>
-
-#ifdef __WATCOMC__
-#   include <fcntl.h>
-#   define AW_S_ISDIR(a) (((a) & S_IFDIR) != 0)
-#   include <process.h>
-#   include <dos.h>
 #endif
 
-
-#include <time.h>
+#ifdef HAS_DOS_H
+#include <dos.h>
+#endif
 
 #include <smapi/msgapi.h>
+#include <smapi/prog.h>
 #include <smapi/progprot.h>
 #include <fidoconf/fidoconf.h>
 #include <fidoconf/common.h>
@@ -59,12 +61,6 @@
 #include <fidoconf/log.h>
 #include <fidoconf/afixcmd.h>
 
-#include <string.h>
-
-#if defined ( __WATCOMC__ )
-#include <smapi/prog.h>
-#include <share.h>
-#endif
 
 #include "cvsdate.h"
 
@@ -554,7 +550,7 @@ int main(int argc, char **argv) {
                 exit(-1);
         }
     } else {
-        // AreaName(s) specified by args
+        /* AreaName(s) specified by args */
         nareas++;
         areas = (char **)srealloc ( areas, nareas*sizeof(char *));
         areas[nareas-1] = argv[i];
@@ -607,7 +603,7 @@ int main(int argc, char **argv) {
                     if (killNoLink) {
                         if (area->downlinkCount <= 1) delArea++;
                         else if (checkPaused) {
-                            delArea = 2; // if two links w/o pause - leave untouched
+                            delArea = 2; /* if two links w/o pause - leave untouched */
                             for (k=0; (unsigned int)k < area->downlinkCount && delArea; k++) {
                                 if (area->downlinks[k]->link->Pause == 0) delArea--;
                             }
@@ -639,7 +635,7 @@ int main(int argc, char **argv) {
                 if (killLowLink) {
                     if (area->downlinkCount <= 1) delArea++;
                     else if (checkPaused) {
-                        delArea = 2; // if two links w/o pause - leave untouched
+                        delArea = 2; /* if two links w/o pause - leave untouched */
                         for (k=0; k < area->downlinkCount && delArea; k++) {
                             if (area->downlinks[k]->link->Pause == 0) delArea--;
                         }
@@ -649,7 +645,7 @@ int main(int argc, char **argv) {
                     delete_area(area);
                     killed++;
                     found++;
-                    if (delFromConfig) { // Area is removed from areas array!
+                    if (delFromConfig) { /* Area is removed from areas array! */
                         i--;
                         area--;
                     }
@@ -664,7 +660,7 @@ int main(int argc, char **argv) {
                     delete_area(area);
                     killed++;
                     found++;
-                    if (delFromConfig) { // Area is removed from areas array!
+                    if (delFromConfig) { /* Area is removed from areas array! */
                         i--;
                         area--;
                     }
@@ -678,7 +674,7 @@ int main(int argc, char **argv) {
     if (fNoDupe) fclose (fNoDupe);
     
     if (killed) fprintf(outlog, "\n");
-    // Put mail for links to netmail
+    /* Put mail for links to netmail */
     for (i=0; (unsigned int)i < config->linkCount; i++) {
         if (config->links[i].msg) {
             link = &(config->links[i]);
@@ -730,7 +726,7 @@ int main(int argc, char **argv) {
         }
     }
     
-    // deinit SMAPI
+    /* deinit SMAPI */
     MsgCloseApi();
     
     disposeConfig(config);
