@@ -82,12 +82,6 @@ int     killSend = 0;
 int     killPass = 0;
 int     createDupe = 0;
 
-/*
-typedef struct xmsgtxt {
-	XMSG xmsg;
-	char *text;
-} s_xmsgtxt;
-*/
 
 void usage(void) {
 
@@ -120,9 +114,8 @@ void usage(void) {
 }
 
 int changeconfig(char *fileName, s_area *area) {
-    char *cfgline=NULL, *token=NULL, *tmpPtr=NULL, *line=NULL, *buff=0;
+    char *cfgline=NULL, *token=NULL, *tmpPtr=NULL, *line=NULL;
     long strbeg = 0, strend = -1;
-    int rc=0;
 
     char *areaName = area->areaName;
 
@@ -193,7 +186,7 @@ int putMsgInArea(s_area *echo, s_message *msg)
 	    ctrlBuff = (char *) CopyToControlBuf((UCHAR *) textWithoutArea,
 						 (UCHAR **) &textStart,
 						 &textLength);
-	    // textStart is a pointer to the first non-kludge line
+
         msgHeader = createXMSG(config,msg, NULL, MSGLOCAL ,NULL);
 
 	    MsgWriteMsg(hmsg, 0, &msgHeader, (UCHAR*)textStart, (dword)textLength, (dword)textLength, (dword)strlen(ctrlBuff), (byte *)ctrlBuff);
@@ -352,7 +345,7 @@ void delete_area(s_area *area)
 	    config->echoAreaCount--;
 	}
     }
-    fprintf(outlog, "done\n"); // can't use an here - freed
+    fprintf(outlog, "done\n"); 
 }
 
 
@@ -367,7 +360,6 @@ int main(int argc, char **argv) {
     int nareas=0;
     int found = 0;
     FILE *f = NULL;
-    //s_xmsgtxt *xmsgtxt = NULL;
     s_link *link = NULL;
     int killed = 0;
     int checkPaused = 0;

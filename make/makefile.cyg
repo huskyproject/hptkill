@@ -5,14 +5,14 @@
 
 SRCDIR= ../src/
 
-CC    = gcc
-CFLAGS= -DNT -D__NT__ -DWINNT -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
-COPT  = -O2
-LFLAGS= -mno-cygwin
+CC    =gcc
+CFLAGS=-D__NT__ -DWIN32 -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
+COPT  =-O2
+LFLAGS=-L../../smapi -L../../fidoconf -mno-cygwin 
 
 
-OBJS = hptkill.o
-LIBS = ../../smapi/libsmapicyg.a ../../smapi/patmat.o /lib/w32api/libuser32.a ../../fidoconf/libfidoconfigcyg.a
+OBJS =hptkill.o
+LIBS =-lfidoconfigcyg -lsmapicyg
 
 all: hptkill.exe
 
