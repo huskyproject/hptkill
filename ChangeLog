@@ -1,3 +1,7 @@
+2003-05-06 Tuesday 17:32  mche
+
+	* make/hptkill.vcproj (1.2): update projects
+
 2003-05-05 Monday 13:12  mche
 
 	* src/hptkill.c (1.35), make/hptkill.vcproj (1.1): - project file
