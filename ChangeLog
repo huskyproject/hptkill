@@ -1,3 +1,12 @@
+2003-02-12 Wednesday 09:29  sfpavel
+
+	* debian/docs (1.2), make/makefil2.bsd (1.5), make/makefile.bsd
+	(1.7), make/makefile.cyg (1.7), make/makefile.djg (1.6),
+	make/makefile.emx (1.8), make/makefile.lnx (1.5), make/makefile.mgw
+	(1.5), make/makefile.mvc (1.5), make/makefile.mvcdll (1.5),
+	make/makefile.sun (1.6), make/makefile.wco (1.5), make/makefile.wcw
+	(1.5): Fix include dir at makefiles
+
 2003-02-11 Tuesday 09:30  sfpavel
 
 	* HISTORY (1.2), VERSION (1.2): Update documentation
