@@ -698,7 +698,7 @@ int main(int argc, char **argv) {
 	    if (patimat(area->areaName, areas[j])==1){
 
 		delArea = 0;
-		if (killPass==0 ) delArea++;
+		if (killPass==0 && killLowLink==0) delArea++;
 		else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
 		    if (killNoLink) {
 			if (area->downlinkCount <= 1) delArea++;
