@@ -1,3 +1,8 @@
+2003-09-22 Monday 05:07  andr_lukyanov
+
+	* make/makefile.wco (hptkill-1_12-stable.3): Fixed OS/2 WatcomC
+	compilation
+
 2003-09-18 Thursday 10:37  sfpavel
 
 	* Makefile (hptkill-1_12-stable.1): Fix static building
