@@ -5,7 +5,7 @@
 # For not use shared libraries uncomment 'STATIC' variable
 
 CC       = gcc
-CFLAGS   = -c -g -Wall -O2 -DUNIX -I../..
+CFLAGS   = -c -g -Wall -O2 -DUNIX -I../.. -DNOSEMAPHORES
 LFLAGS   = -s -L../../fidoconf -L../../smapi ../../smapi/patmat.o ../../smapi/setfsize.o
 
 OBJS    = hptkill.o

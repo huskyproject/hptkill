@@ -6,7 +6,7 @@
 SRCDIR= ../src/
 
 CC    = gcc
-CFLAGS= -DOS2 -I../.. -c -O3
+CFLAGS= -DOS2 -I../.. -c -O3 -DNOSEMAPHORES
 COPT  = -O2
 LFLAGS=-Zcrtdll
 

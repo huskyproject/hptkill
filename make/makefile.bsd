@@ -17,7 +17,7 @@ PREFIX= /usr/local
 
 CC=     gcc
 CFLAGS= -Wall
-CDEFS=  -DUNIX
+CDEFS=  -DUNIX -DNOSEMAPHORES
 COPT=   -O3 -c -g
 INCDIRS= -I../..
 
