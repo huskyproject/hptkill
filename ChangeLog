@@ -1,3 +1,7 @@
+2003-02-20 Thursday 09:17  sfpavel
+
+	* HISTORY (1.3): Merge HISTORY with stable
+
 2003-02-12 Wednesday 09:29  sfpavel
 
 	* debian/docs (1.2), make/makefil2.bsd (1.5), make/makefile.bsd
