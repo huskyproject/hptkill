@@ -1,0 +1,39 @@
+# EMX OS/2 OMF STYLE MAKEFILE
+#
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+CC      = gcc
+RM	= cmd /c del
+
+DEBUG=-s
+# set to -g for debugging
+
+CFLAGS=-I.. -c -O3 $(DEBUG)
+LFLAGS=-Zcrtdll $(DEBUG)
+OSTYPE=OS2
+
+
+CDEFS=-D$(OSTYPE) -DUNAME=\"$(OSTYPE)\"
+LIBS=../smapi/smapiemx.a
+SRC_DIR=src/
+EXENAMEFLAG=-o 
+EXE=.exe
+OBJ=.o
+
+all: hptkill$(EXE)
+
+%$(OBJ): $(SRC_DIR)%.c
+		$(CC) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
+
+hptkill$(EXE): hptkill$(OBJ)
+		$(CC) $(LFLAGS) $(EXENAMEFLAG)hptkill$(EXE) hptkill$(OBJ) $(LIBS)
+
+clean:
+		$(RM) *$(OBJ)
+		$(RM) *~
+
+distclean: clean
+		$(RM) hptkill$(EXE)
+
