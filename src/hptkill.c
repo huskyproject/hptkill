@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.07";
+char *version = "1.08";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -116,6 +116,7 @@ void usage(void) {
     fprintf(outlog, "   -k - set Kill/Sent attribute to messages for links\n");
     fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
     fprintf(outlog, "   -pp - same as -p including paused links\n");
+    fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
     fprintf(outlog, "\nDefault settings:\n");
     fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
     fprintf(outlog, " -  leave config unchanged\n");
@@ -619,8 +620,13 @@ int main(int argc, char **argv) {
     s_link *link;
     int killed=0;
     int checkPaused=0;
+    int killNoLink = 0;
+    int killOld = 0;
     int delArea;
+    time_t oldest;
     s_area *area;
+    struct stat stbuf;
+
    
 
     outlog=stdout;
@@ -696,8 +702,21 @@ int main(int argc, char **argv) {
 
 		case 'p': /* kill passthrough areas with 1 link*/
 		case 'P':
+		    killNoLink++;
 		    killPass++;
 		    if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
+		    break;
+
+		case 'o': /* kill passthrough area with dupebase older 'days' days */
+		case 'O':
+		    i++;
+		    if ( argv[i] == NULL || argv[i][0] == '\0') {
+			usage();
+			exit(-1);
+		    }
+		    killPass++;
+		    killOld++;
+		    oldest = time(NULL) - atoi(argv[i]) * 60*60*24;
 		    break;
 
 		default:
@@ -749,15 +768,22 @@ int main(int argc, char **argv) {
 		delArea = 0;
 		if (killPass==0 ) delArea++;
 		else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
-		    if (area->downlinkCount <= 1) delArea++;
-		    else if (checkPaused) {
-			delArea = 2; // if two links w/o pause - leave untouched
-			for (k=0; k < area->downlinkCount && delArea; k++) {
-			    if (area->downlinks[k]->link->Pause == 0) delArea--;
-			    //printf("debug link: %s\n",area->downlinks[k]->link->name);
-			    //printf("debug pause: %u\n",area->downlinks[k]->link->Pause);
+		    if (killNoLink) {
+			if (area->downlinkCount <= 1) delArea++;
+			else if (checkPaused) {
+			    delArea = 2; // if two links w/o pause - leave untouched
+			    for (k=0; k < area->downlinkCount && delArea; k++) {
+				if (area->downlinks[k]->link->Pause == 0) delArea--;
+			    }
 			}
-				//printf("debug delArea: %u\n",delArea);
+		    }
+		    if (killOld && !delArea && area->dupeCheck != dcOff) {
+			char *dupename = createDupeFileName(area);
+			if (dupename) {
+			    if (stat(dupename, &stbuf)==0 &&
+				stbuf.st_mtime < oldest) delArea++;
+			    nfree(dupename);
+			}
 		    }
 		}
 		if (delArea) {

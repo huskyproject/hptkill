@@ -1,5 +1,10 @@
-hptkill 1.05
+hptkill 1.08
 ---------	
+
+----- cvs ci ------
+Tue Oct 23 23:00:30 NOVST 2001
+max (patch from Serguei Revtov):
+* '-o days' option
 
 ----- cvs ci ------
 Fri Jul 20 14:06:39 NOVST 2001
