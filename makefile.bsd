@@ -1,0 +1,59 @@
+# Legacy makefile for FreeBSD, NetBSD & OpenBSD by Stas Degteff 2:5080/102
+# Tested on FreeBSD 4.1-RELEASE
+#
+# Use GNU version of make (gmake)
+#
+# For not use shared libraries uncomment 'SHARED' variable
+#
+
+#STATIC = -static
+
+TARGET= hptkill
+OBJS=   hptkill.o
+
+SRC_DIR= src/
+H_DIR=   h/
+
+PREFIX= /usr/local
+
+CC=     gcc
+CFLAGS= -Wall
+CDEFS=  -DUNIX
+COPT=   -O3 -c -g
+INCDIRS= -I./h -I..
+
+LIBS=   -L../fidoconf -L../smapi -lsmapi -lfidoconfig
+LFLAGS= -s $(STATIC)
+
+BINDIR= $(PREFIX)/bin
+IBOPT=  -m 555 -c
+DIROPT= -d -m 755
+INSTALL= install
+RM= rm -f
+
+# FreeBSD/i386 addition
+#
+ifeq ( ${MACHINE_ARCH} , "i386" )
+   CFLAGS+= -fomit-frame-pointer -fstrength-reduce -m486
+endif
+
+
+all: $(OBJS) \
+	program
+
+%.o: $(SRC_DIR)%.c
+	$(CC) $(CFLAGS) $(CDEFS) $(COPT) $(INCDIRS) $(SRC_DIR)$*.c
+
+program: $(OBJS)
+	$(CC) $(LFLAGS) $(LIBS) -o $(TARGET) $(OBJS)
+
+clean:
+	-$(RM) *.o
+	-$(RM) *.core
+
+distclean: clean
+	-rm -f $(TARGET)
+
+install: program
+	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
+
