@@ -1,3 +1,8 @@
+2002-11-10 Sunday 09:05  sfpavel
+
+	* debian/changelog, src/hptkill.c (hptkill-1_10-stable.[2,2]):
+	hptkill 1.10 release
+
 2002-11-01 Friday 07:08  sfpavel
 
 	* debian/changelog, debian/control, debian/rules, src/hptkill.c
