@@ -290,7 +290,7 @@ void update_queue(s_area *area)
     
     if (upDate == 0)
     {
-        long eTime;
+        time_t eTime;
         struct  tm t1,t2;
         eTime = tnow + config->killedRequestTimeout*secInDay;
         t1 = *localtime( &tnow );
