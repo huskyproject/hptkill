@@ -1,3 +1,8 @@
+2005-04-04 Monday 04:13  sfpavel
+
+	* hptkill.1, src/hptkill.c (hptkill-1_12-stable.[1,4]): Change help
+	message (patch from Serguei I.Revtov)
+
 2005-03-20 Sunday 01:46  sfpavel
 
 	* debian/changelog (hptkill-1_12-stable.8): 1.4-RC3 release
