@@ -11,7 +11,7 @@ CC      = gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -c -g -Wall -DUNIX -I../..
+CFLAGS	= -c -g -Wall -DUNIX -I../h
 COPT	= -O2
 LFLAGS	= -s -L../../fidoconf -L../../smapi ../../smapi/patmat.o ../../smapi/setfsize.o
 

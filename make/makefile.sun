@@ -11,7 +11,7 @@ CC	= gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -c -g -O2 -DUNIX -I../..
+CFLAGS	= -c -g -O2 -DUNIX -I../h
 LFLAGS	= -s -L../../fidoconf -L../../smapi
 LIBS	= -lfidoconfigsun -lsmapisun
 

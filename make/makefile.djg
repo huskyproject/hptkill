@@ -11,7 +11,7 @@ CC	= gcc
 RM	= del
 RMOPT	=
 
-CFLAGS	= -I../.. -Wall -c -mcpu=i486
+CFLAGS	= -I../h -Wall -c -mcpu=i486
 LFLAGS	= -s -L../../fidoconf -L../../smapi
 COPT	= -O2
 
