@@ -2,8 +2,13 @@
 #
 # Microsoft Visual C++ Makefile for build hptkill static library
 
+SRC_DIR	= ..\src
+
+PREFIX	= \fidonet
+
 CC	= cl
 RM	= del
+RMOPT	=
 
 CFLAGS	= -nologo -Zp1 -I..\..
 CDEFS	= -D__NT__ -D_CONSOLE
@@ -12,20 +17,44 @@ TLIB	= lib -nologo
 
 LIBS	= ..\..\smapi\smapimvc.lib ..\..\fidoconf\fconfmvc.lib
 
+EXENAME	= hptkill
 EXENAMEFLAG = -Fe
 
 OBJ	= .obj
 EXE	= .exe
 
-TARGET	= hptkill$(EXE)
+TARGET	= $(EXENAME)$(EXE)
 
-all: $(TARGET)
+BINDIR	= $(PREFIX)\bin
+DOCDIR	= $(PREFIX)\doc
+IBOPT	= /z
+DIROPT	=
+INSTALL	= copy
 
-$(TARGET):
-        $(CC) $(CFLAGS) $(CDEFS) $(COPT) $(EXENAMEFLAG)$@ ..\src\hptkill.c $(LIBS)
+default: all
+
+all: programs
+
+programs: 
+        $(CC) $(CFLAGS) $(CDEFS) $(COPT) $(EXENAMEFLAG)$(TARGET) $(SRC_DIR)\$(EXENAME).c $(LIBS)
+
+man:
+
+doc: man
+	man2html$(EXE) <..\$(EXENAME).1 >$(EXENAME).html
 
 clean:
-	-$(RM) *$(OBJ)
+	-$(RM) $(RMOPT) *$(OBJ)
 
 distclean: clean
-	-$(RM) $(TARGET)
+	-$(RM) $(RMOPT) $(TARGET)
+	-$(RM) $(RMOPT) $(EXENAME).html
+
+install: programs doc
+	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
+	$(INSTALL) $(IBOPT) ..\$(EXENAME).1 $(DOCDIR)
+	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
+
+uninstall:
+	-$(RM) $(RMOPT) $(BINDIR)\$(TARGET)
+	-$(RM) $(RMOPT) $(DOCDIR)\$(EXENAME).html

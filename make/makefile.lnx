@@ -8,35 +8,62 @@
 
 #STATIC = -static
 
-SRC_DIR = ../src/
+SRC_DIR = ../src
+
+PREFIX	= /usr/local
 
 CC	= gcc
-RM	= rm -f
+RM	= rm
+RMOPT	= -f
 
 CFLAGS	= -c -g -Wall -O2 -DUNIX -I../..
 LFLAGS	= -s -L../../fidoconf -L../../smapi
 LIBS	= -lsmapilnx -lfidoconfiglnx
 
+EXENAME	= hptkill
 EXENAMEFLAG = -o
 
 OBJ	= .o
 EXE	=
 
-OBJS    = hptkill$(OBJ)
-TARGET	= hptkill$(EXE)
+OBJS    = $(EXENAME)$(OBJ)
+TARGET	= $(EXENAME)$(EXE)
 
-all: $(OBJS) $(TARGET)
+BINDIR	= $(PREFIX)/bin
+DOCDIR	= $(PREFIX)/doc
+IBOPT	= -m 555 -c
+DIROPT	= -d -m 755
+INSTALL	= install
 
-%$(OBJ): $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(SRC_DIR)$*.c
+default: all
 
-$(TARGET): $(OBJS)
+all: $(OBJS) programs
+
+%$(OBJ): $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $(SRC_DIR)/$*.c
+
+programs: $(OBJS)
 	$(CC) $(LFLAGS) $(STATIC) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
 
+man:
+
+doc: man
+	man2html$(EXE) <../$(EXENAME).1 >$(EXENAME).html
+
 clean:
-	-$(RM) *$(OBJ)
-	-$(RM) *~
-	-$(RM) core
+	-$(RM) $(RMOPT) *$(OBJ)
+	-$(RM) $(RMOPT) *~
+	-$(RM) $(RMOPT) core
 
 distclean: clean
-	-$(RM) $(TARGET)
+	-$(RM) $(RMOPT) $(TARGET)
+	-$(RM) $(RMOPT) $(EXENAME).html
+
+install: programs doc
+	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
+	$(INSTALL) $(IBOPT) ../$(EXENAME).1 $(PREFIX)/man/man1
+	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
+
+uninstall:
+	-$(RM) $(RMOPT) $(BINDIR)/$(TARGET)
+	-$(RM) $(RMOPT) $(DOCDIR)/$(EXENAME).html

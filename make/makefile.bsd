@@ -3,35 +3,33 @@
 # Legacy makefile for FreeBSD, NetBSD & OpenBSD by Stas Degteff 2:5080/102
 # Tested on FreeBSD 4.1-RELEASE
 # Use GNU version of make (gmake)
-#
-# For compile static binary (w/out shared libraries) uncomment 'STATIC' macro
-#
 
-#STATIC = -static
-
-SRC_DIR	= ../src/
+SRC_DIR	= ../src
 
 PREFIX	= /usr/local
 
 CC	= gcc
-RM	= rm -f
+RM	= rm
+RMOPT	= -f
 
 CFLAGS	= -Wall -I../..
 CDEFS	= -DUNIX
 COPT	= -O3 -c -g
-LFLAGS	= -s -L../../fidoconf -L../../smapi $(STATIC)
+LFLAGS	= -s -L../../fidoconf -L../../smapi
 
 LIBS	= -lsmapibsd -lfidoconfigbsd
 
+EXENAME	= hptkill
 EXENAMEFLAG = -o
 
 OBJ	= .o
 EXE	=
 
-OBJS	= hptkill$(OBJ)
-TARGET	= hptkill$(EXE)
+OBJS	= $(EXENAME)$(OBJ)
+TARGET	= $(EXENAME)$(EXE)
 
 BINDIR	= $(PREFIX)/bin
+DOCDIR	= $(PREFIX)/doc
 IBOPT	= -m 555 -c
 DIROPT	= -d -m 755
 INSTALL	= install
@@ -42,21 +40,37 @@ ifeq ( ${MACHINE_ARCH} , "i386" )
    CFLAGS+= -fomit-frame-pointer -fstrength-reduce -m486
 endif
 
-all: $(OBJS) $(TARGET)
+default: all
 
-%(OBJ): $(SRC_DIR)%.c
-	$(CC) $(COPT) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
+all: $(OBJS) programs
 
-$(TARGET): $(OBJS)
+%(OBJ): $(SRC_DIR)/%.c
+	$(CC) $(COPT) $(CFLAGS) $(CDEFS) $(SRC_DIR)/$*.c
+
+programs: $(OBJS)
 	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
 
+static: $(OBJS)
+	$(CC) $(LFLAGS) -static $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
+
+man:
+
+doc: man
+	man2html$(EXE) <..\$(EXENAME).1 >$(EXENAME).html
+
 clean:
-	-$(RM) *$(OBJ)
-	-$(RM) *.core
+	-$(RM) $(RMOPT) *$(OBJ)
+	-$(RM) $(RMOPT) *.core
 
 distclean: clean
-	-$(RM) $(TARGET)
+	-$(RM) $(RMOPT) $(TARGET)
+	-$(RM) $(RMOPT) $(EXENAME).html
 
-install: $(TARGET)
+install: programs doc
 	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
+	$(INSTALL) $(IBOPT) ../$(EXENAME).1 $(PREFIX)/man/man1
+	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
 
+uninstall:
+	-$(RM) $(RMOPT) $(BINDIR)\$(TARGET)
+	-$(RM) $(RMOPT) $(DOCDIR)\$(EXENAME).html
