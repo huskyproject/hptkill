@@ -101,6 +101,7 @@ void usage(void) {
     fprintf(outlog, "hptkill %s\n", version);
     fprintf(outlog, "Areas killing utility\n");
     fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
+    fprintf(outlog, "   -c config-file - specify alternate config file\n");
     fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
     fprintf(outlog, "   -n - don't send unsubscribe message\n");
     fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
@@ -116,7 +117,7 @@ void usage(void) {
     fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
     fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
     fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
-    fprintf(outlog, "   -c - create empty dupebase if it doesn't exist\n");
+    fprintf(outlog, "   -C - create empty dupebase if it doesn't exist\n");
     fprintf(outlog, "\nDefault settings:\n");
     fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
     fprintf(outlog, " -  leave config unchanged\n");
@@ -534,7 +535,7 @@ int main(int argc, char **argv) {
     char *listNoDupeFile = NULL;
     FILE *fNoDupe = NULL;
     char *dupename = NULL;
-
+    char *cfgfile = NULL;
 
 
     outlog=stdout;
@@ -545,6 +546,14 @@ int main(int argc, char **argv) {
 	if ( argv[i][0] == '-' ) {
 	    switch (argv[i][1])
 		{
+		case 'c': /* alternate config file */
+                    if ( ++i<argc ) {
+                      cfgfile = argv[i];
+                    } else {
+                      fprintf( stderr, "Parameter required after -c\n");
+                      usage();
+                    }
+                    break;
 		case '1': /* send unsubscribe message to first link only */
 		    sendUnSubscribe = eFirstLink;
 		    break;
@@ -644,8 +653,7 @@ int main(int argc, char **argv) {
 		    listNoDupeFile = argv[i];
 		    break;
 
-		case 'c': /* create empty dupebase if it doesn't exist */
-		case 'C':
+		case 'C': /* create empty dupebase if it doesn't exist */
 		    createDupe++;
 		    break;
 
@@ -680,7 +688,9 @@ int main(int argc, char **argv) {
 
     fprintf(outlog,"hptkill %s\n", version);
 
-    config = readConfig(getConfigFileName());
+    if( cfgfile && cfgfile[0] )
+           config = readConfig(cfgfile);
+    else   config = readConfig(getConfigFileName());
 
     if (!config) {
 	fprintf(outlog, "Could not read fido config\n");
