@@ -63,14 +63,19 @@
 #include <fidoconf/xstr.h>
 #include <fidoconf/log.h>
 #include <fidoconf/afixcmd.h>
+#include <fidoconf/version.h>
 
+#define VER_MAJOR 1
+#define VER_MINOR 11
+#define VER_PATCH 0
+#define VER_BRANCH BRANCH_CURRENT
 
 #include "cvsdate.h"
 
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.11";
+char *VERSION;
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -85,7 +90,6 @@ const   long    secInDay = 3600*24;
 
 void usage(void) {
 
-    fprintf(outlog, "hptkill %s %s\n", version, cvs_date);
     fprintf(outlog, "Areas killing utility\n");
     fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
     fprintf(outlog, "   -c config-file - specify alternate config file\n");
@@ -435,8 +439,11 @@ int main(int argc, char **argv) {
     
     
     outlog=stdout;
-    
     setbuf(outlog, NULL);
+    
+    VERSION = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
+                               VER_BRANCH, cvs_date );
+    fprintf(outlog,"%s\n", VERSION);
     
     for (i=1; i<argc; i++) {
         if ( argv[i][0] == '-' ) {
@@ -576,9 +583,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    
-    fprintf(outlog,"hptkill %s\n", version);
-    
+
     if( cfgfile && cfgfile[0] )
         config = readConfig(cfgfile);
     else   config = readConfig(getConfigFileName());
