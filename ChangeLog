@@ -1,3 +1,8 @@
+2005-01-09 Sunday 15:46  val_khokhlov
+
+	* src/hptkill.c (1.42): use new robot-dependent structs in
+	fidoconfig
+
 2004-06-07 Monday 11:25  sfpavel
 
 	* debian/compat (1.1): file compat was initially added on branch
