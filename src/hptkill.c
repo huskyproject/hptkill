@@ -262,7 +262,8 @@ int delareafromconfig(char *fileName, s_area *area) {
     fclose(f);
     return 0;
 }
-
+#if 0
+// this function moved to smapi has name _createDirectoryTree
 int createDirectoryTree(const char *pathName) {
 
     struct stat buf;
@@ -317,7 +318,7 @@ int createDirectoryTree(const char *pathName) {
 
     return 0;
 }
-
+#endif
 
 int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 {
@@ -330,7 +331,7 @@ int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 
     // create Directory Tree if necessary
     if (echo->msgbType == MSGTYPE_SDM)
-	createDirectoryTree(echo->fileName);
+	_createDirectoryTree(echo->fileName);
     else if (echo->msgbType==MSGTYPE_PASSTHROUGH) {
 	fprintf(outlog, "Can't put message to passthrough area %s!",
 		echo->areaName);
@@ -340,7 +341,7 @@ int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 	slash = strrchr(echo->fileName, PATH_DELIM);
 	if (slash) {
 	    *slash = '\0';
-	    createDirectoryTree(echo->fileName);
+	    _createDirectoryTree(echo->fileName);
 	    *slash = PATH_DELIM;
 	}
     }
