@@ -1,54 +1,132 @@
-hptkill 1.10
----------
+2002-07-16 Tuesday 21:59  stas
 
------ cvs ci ------
-Fri Apr 26 12:06:49 EEST 2002 (patch from Andr Luk'yanov)
-* added makefile.wco
+	* .cvs2cl (1.1): Use standard husky ChangeLog
 
------ cvs ci ------
-Thu Jan 31 16:57:11 MSK 2002
-max (patch from Serguei Revtov):
-* '-c' option
-* compiling on platforms other than MSVC
+2002-07-16 Tuesday 21:57  stas
 
------ cvs ci ------
-Tue Oct 30 18:56:55 NOVT 2001
-max (patch from Serguei Revtov):
-* '-O days' & '-l file' options
+	* makefil2.bsd (1.1): new legacy makefile for FreeBSD
 
------ cvs ci ------
-Tue Oct 23 23:00:30 NOVST 2001
-max (patch from Serguei Revtov):
-* '-o days' option
+2002-07-06 Saturday 13:30  mche
 
------ cvs ci ------
-Fri Jul 20 14:06:39 NOVST 2001
-max (patch from Serguei Revtov):
-* bugfix again: not all areas removed when specified with mask (and with -p)
-* indent/format source code
+	* src/hptkill.c (1.21): patch by [Kostya Falkov2:5014/33.1]
 
------ cvs ci ------
-Sun Jun 10 15:44:50 NOVST 2001
-max (patch from Serguei Revtov):
-* -pp option
+2002-06-25 Tuesday 15:34  mche
 
------ cvs ci ------
-Mon May 21 16:41:21 NOVST 2001
-max (patch from Serguei Revtov):
-* bugfix: not all areas removed when specified with mask (and with -p)
+	* src/hptkill.c (1.20): -y - find & kill ANY echoareas with <=1
+	links -yp - same as -y including paused links
+	
+	patch by [Kostya Falkov  2:5014/33.1]
 
------ cvs ci ------
-Sun May 20 10:34:45 NOVST 2001
-max (patch from Serguei Revtov):
-* -p option: kill passthrough areas with <=1 links
+2002-06-21 Friday 15:03  mche
 
------ cvs ci ------
-Thu Mar 22 12:05:13 MSK 2001
-max (patch from Serguei Revtov):
-* error on removing of last line of config
+	* src/hptkill.c (1.19): some warning are removed
 
------ cvs ci ------
-Mon Dec  4 11:01:05 MSK 2000
-max (patch from Serguei Revtov):
-* patterns in area names
+2002-06-18 Tuesday 15:36  stas
+
+	* Makefile (1.3): Modify clean tag: binary file removed in
+	distclean only now.
+
+2002-06-18 Tuesday 15:19  stas
+
+	* makefile.bsd (1.1): Legacy makefile for FreeBSD & etc.
+
+2002-06-18 Tuesday 15:19  stas
+
+	* src/hptkill.c (1.18): Init variables in main() (fix compiler
+	warning).
+
+2002-04-26 Friday 11:34  d.sergienko
+
+	* makefile.wco (1.1): added OS/2 support (patch from Andr
+	Luk'yanov)
+
+2002-04-23 Tuesday 21:45  pavel.gulchouck
+
+	* src/hptkill.c (1.17): strftime() changed to fts_time()
+
+2002-03-20 Wednesday 17:25  mche
+
+	* src/hptkill.c (1.16): function createDirectoryTree changed to
+	_createDirectoryTree from smapi
+
+2002-03-05 Tuesday 14:09  joerg.jaspert
+
+	* debian/: changelog (1.1), control (1.1), copyright (1.1), dirs
+	(1.1), huskymak.cfg (1.1), rules (1.1): Debian Package
+
+2002-03-05 Tuesday 14:09  joerg.jaspert
+
+	* Makefile (1.2): Debian-specific -> Location of Huskymak.cfg
+
+2002-02-15 Friday 11:33  mche
+
+	* makefile.mvcdll (1.3): minimized binaries size
+
+2002-01-31 Thursday 17:31  ml
+
+	* src/hptkill.c (1.15): '-c' option
+
+2002-01-29 Tuesday 11:18  mche
+
+	* makefile.mvcdll (1.2): fixed bug with dll compilation under win32
+
+2002-01-29 Tuesday 10:56  ml
+
+	* src/hptkill.c (1.14): id
+
+2002-01-29 Tuesday 10:14  ml
+
+	* src/hptkill.c (1.13): remove compiling warning
+
+2002-01-29 Tuesday 09:58  mche
+
+	* src/hptkill.c (1.12): fixed bug with dll compilation under win32
+
+2002-01-29 Tuesday 09:50  mche
+
+	* src/hptkill.c (1.11): strseparate is removed it is in fidoconfig
+	now
+
+2002-01-28 Monday 18:57  ml
+
+	* makefile.mvcdll (1.1), src/hptkill.c (1.10): msvc dll compiling
+	[patch from Dmitriy Stepanov]
+
+2001-10-30 Tuesday 13:54  ml
+
+	* src/hptkill.c (1.9): '-O days' & '-l file' options [patch by
+	S.R.]
+
+2001-10-23 Tuesday 17:59  ml
+
+	* src/hptkill.c (1.8): '-o days' option [patch by S.R.]
+
+2001-07-20 Friday 09:14  ml
+
+	* src/hptkill.c (1.7): bugfix again: not all areas removed when
+	specified with mask (and with -p); indent/format source code [patch
+	from Serguei Revtov]
+
+2001-06-10 Sunday 10:46  ml
+
+	* Makefile (1.1), src/hptkill.c (1.6): -pp option, husky Makefile
+
+2001-05-21 Monday 11:45  ml
+
+	* src/hptkill.c (1.5): bugfix: not all areas removed when specified
+	with mask and with -p (patch from Serguei)
+
+2001-05-20 Sunday 11:33  ml
+
+	* src/hptkill.c (1.4): -p option: kill passthrough areas with <=1
+	links (patch from Serguei Revtov)
+
+2001-04-30 Monday 08:17  kazimirow
+
+	* makefile.mvc (1.1): MSVC makefile for HPTkill
+
+2000-12-02 Saturday 17:01  ml
+
+	* makefile.lnx (1.1), makefile.sun (1.1), makefile.wcw (1.1),
+	src/hptkill.c (1.1): Initial revision
 
