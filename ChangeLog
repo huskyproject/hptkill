@@ -1,3 +1,8 @@
+2003-02-25 Tuesday 09:55  sfpavel
+
+	* debian/changelog (hptkill-1_12-stable.4): New debian version:
+	1.12-beta2
+
 2003-02-19 Wednesday 06:17  sfpavel
 
 	* debian/: changelog, control, rules (hptkill-1_12-stable.[3,2,1]):
