@@ -1,3 +1,11 @@
+2003-03-15 Saturday 22:00  d_sergienko
+
+	* src/hptkill.c (1.34): fix compiling
+
+2003-03-15 Saturday 20:26  d_sergienko
+
+	* Makefile (1.7): fix compiling
+
 2003-03-09 Sunday 04:32  nssoft
 
 	* Makefile (1.6), src/hptkill.c (1.33): link with huskylib
