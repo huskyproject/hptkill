@@ -1,5 +1,10 @@
-hptkill 1.04
+hptkill 1.05
 ---------	
+
+----- cvs ci ------
+Mon May 21 16:41:21 NOVST 2001
+max (patch from Serguei Revtov):
+* bugfix: not all areas removed when specified with mask (and with -p)
 
 ----- cvs ci ------
 Sun May 20 10:34:45 NOVST 2001

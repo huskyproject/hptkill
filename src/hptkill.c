@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.04";
+char *version = "1.05";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -745,6 +745,7 @@ int main(int argc, char **argv) {
 				  delete_area(&(config->echoAreas[i]));
 				  killed++;
 				  found++;
+				  if (delFromConfig) i--; // Area is removed from areas array!
 			  }
 		  }
       }
@@ -755,6 +756,7 @@ int main(int argc, char **argv) {
 				  delete_area(&(config->localAreas[i]));
 				  killed++;
 				  found++;
+				  if (delFromConfig) i--; // Area is removed from areas array!
 			  }
 		  }
 
