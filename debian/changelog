@@ -1,3 +1,11 @@
+hptkill (1.10.4-1) stable; urgency=low
+
+  * hptkill 1.10.4 release
+  * New maintainer's E-mail
+  * Debhelper V4
+
+ -- Pavel Andreew <sfpavel@users.sourceforge.net>  Fri, 30 May 2003 14:11:32 +0600
+
 hptkill (1.10.2-1) stable; urgency=low
 
   * hptkill 1.10.2 release
