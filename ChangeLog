@@ -1,3 +1,11 @@
+2003-02-12 Wednesday 09:32  sfpavel
+
+	* make/: makefil2.bsd, makefile.bsd, makefile.cyg, makefile.djg,
+	makefile.emx, makefile.lnx, makefile.mgw, makefile.mvc,
+	makefile.mvcdll, makefile.sun, makefile.wco, makefile.wcw
+	(hptkill-1_12-stable.[2,2,2,2,2,2,2,2,2,3,2,2]): Fix include dir at
+	makefiles
+
 2003-02-11 Tuesday 12:28  sfpavel
 
 	* debian/changelog (hptkill-1_12-stable.2): Change debian version
