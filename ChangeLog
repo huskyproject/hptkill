@@ -1,3 +1,8 @@
+2003-01-16 Thursday 09:16  stas_degteff
+
+	* src/hptkill.c (1.29): Use new defines from compiler.h; fix
+	FreeBSD build (include errno.h)
+
 2003-01-11 Saturday 16:38  mche
 
 	* src/hptkill.c (1.28): update queryfile when unlink from uplinks
