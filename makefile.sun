@@ -1,0 +1,21 @@
+CC       = gcc
+CFLAGS   = -c -g -O2 -DUNIX -I./h -I..
+LFLAGS   = -s -L../fidoconf -L../smapi
+
+OBJS    = hptkill.o
+SRC_DIR = src/
+
+all: $(OBJS) \
+	hptkill
+
+%.o: $(SRC_DIR)%.c
+	$(CC) $(CFLAGS) $(SRC_DIR)$*.c
+
+hptkill: $(OBJS)
+	$(CC) $(LFLAGS) -o hptkill $(OBJS) -lsmapisun -lfidoconfigsun
+
+clean:
+	-rm -f *.o
+	-rm -f *~
+	-rm -f hptkill
+	-rm -f core
