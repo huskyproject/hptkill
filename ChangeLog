@@ -1,3 +1,7 @@
+2003-01-21 Tuesday 06:19  stas_degteff
+
+	* hptkill.dsp (1.2): 0x0a --> 0x0d0x0a for *.dsp
+
 2003-01-20 Monday 02:32  andr_lukyanov
 
 	* make/: makefile.bsd (1.4), makefile.emx (1.6): Fix EMX and
