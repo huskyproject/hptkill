@@ -1,3 +1,9 @@
+hptkill (1.10.2-1) stable; urgency=low
+
+  * hptkill 1.10.2 release
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Fri, 27 Dec 2002 18:04:52 +0500
+
 hptkill (1.10.1-1) stable; urgency=low
 
   * Hptkill 1.10 release
