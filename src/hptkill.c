@@ -30,26 +30,29 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
-#include <process.h>
 #include <string.h>
-
 
 #include <smapi/compiler.h>
 
-#ifdef HAS_UNISTD_H
-#include <unistd.h>
-#include <strings.h>
+#ifdef HAS_PROCESS_H
+#  include <process.h>
 #endif
+
+#ifdef HAS_UNISTD_H
+#  include <unistd.h>
+#  include <strings.h>
+#endif
+
 #ifdef HAS_IO_H
-#include <io.h>
+#  include <io.h>
 #endif
 
 #ifdef HAS_SHARE_H
-#   include <share.h>
+#  include <share.h>
 #endif
 
 #ifdef HAS_DOS_H
-#include <dos.h>
+#  include <dos.h>
 #endif
 
 #include <smapi/msgapi.h>
