@@ -76,14 +76,10 @@
 
 #include <stdlib.h>
 
-#ifndef _MAKE_DLL_MVC_
-extern char *curconfname;
-extern long curconfpos;
-#endif
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.09";
+char *version = "1.10";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -92,6 +88,7 @@ int     delFromConfig = 0;
 int     eraseBase = 1;
 int     killSend = 0;
 int     killPass = 0;
+int     createDupe = 0;
 
 typedef struct xmsgtxt {
 	XMSG xmsg;
@@ -117,6 +114,7 @@ void usage(void) {
     fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
     fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
     fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
+    fprintf(outlog, "   -c - create empty dupebase if it doesn't exist\n");
     fprintf(outlog, "\nDefault settings:\n");
     fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
     fprintf(outlog, " -  leave config unchanged\n");
@@ -209,16 +207,11 @@ int delareafromconfig(char *fileName, s_area *area) {
 	    token = strseparate(&cfgline, " \t");
 	    if (stricmp(token, "echoarea")==0) {
 		token = strseparate(&cfgline, " \t");
-        if (stricmp(token, areaName)==0) {
-#ifdef _MAKE_DLL_MVC_
-            fileName = safe_strdup(getCurConfName());
-            pos = getCurConfPos();
-#else
-            fileName = safe_strdup(curconfname);
-            pos = curconfpos;
-#endif
-            break;
-        }
+    		if (stricmp(token, areaName)==0) {
+        	    fileName = safe_strdup(getCurConfName());
+        	    pos = getCurConfPos();
+        	    break;
+    		}
 	    }
 	}
 	nfree(buff);
@@ -614,6 +607,7 @@ int main(int argc, char **argv) {
     struct stat stbuf;
     char *listNoDupeFile=NULL;
     FILE *fNoDupe=NULL;
+    char *dupename;
 
 
 
@@ -718,6 +712,11 @@ int main(int argc, char **argv) {
 		    listNoDupeFile = argv[i];
 		    break;
 
+		case 'c': /* create empty dupebase if it doesn't exist */
+		case 'C':
+		    createDupe++;
+		    break;
+
 		default:
 		    usage();
 		    exit(-1);
@@ -740,8 +739,10 @@ int main(int argc, char **argv) {
 	    needfree = (char *)safe_realloc ( needfree, nareas*sizeof(char));
 	    needfree[nareas-1] = 0;
 	} else {
-	    usage();
-	    exit (-1);
+	    if (!createDupe) {
+		usage();
+		exit (-1);
+	    }
 	}
     }
 
@@ -777,7 +778,7 @@ int main(int argc, char **argv) {
 			}
 		    }
 		    if (killOld && !delArea && area->dupeCheck != dcOff) {
-			char *dupename = createDupeFileName(area);
+			dupename = createDupeFileName(area);
 			if (dupename) {
 			    if (stat(dupename, &stbuf)==0) {
 				if (stbuf.st_mtime < oldest) delArea++;
@@ -865,6 +866,22 @@ int main(int argc, char **argv) {
 	} else {
 	    fprintf(f,"%s\n", config->netMailAreas[0].areaName);
 	    fclose(f);
+	}
+    }
+
+    if (createDupe) {
+	for (i=0, area = config->echoAreas; i < config->echoAreaCount; i++, area++) {
+	    dupename = createDupeFileName(area);
+	    if (stat(dupename, &stbuf)!=0) {
+		fprintf (outlog, "Creating %s\n", dupename);
+		f=fopen(dupename, "a");
+		if (f) {
+		    fclose (f);
+		} else {
+		    fprintf (outlog, "Can't create %s\n", dupename);
+		}
+	    }
+	    nfree(dupename);
 	}
     }
 

@@ -1,5 +1,11 @@
-hptkill 1.09
+hptkill 1.10
 ---------
+
+----- cvs ci ------
+Thu Jan 31 16:57:11 MSK 2002
+max (patch from Serguei Revtov):
+* '-c' option
+* compiling on platforms other than MSVC
 
 ----- cvs ci ------
 Tue Oct 30 18:56:55 NOVT 2001
