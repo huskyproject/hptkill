@@ -1,3 +1,13 @@
+2004-06-07 Monday 11:25  sfpavel
+
+	* debian/compat (1.1): file compat was initially added on branch
+	hptkill-1_12-stable.
+
+2004-06-07 Monday 11:24  sfpavel
+
+	* debian/: changelog, control, rules, compat
+	(hptkill-1_12-stable.[7,4,2,1]): New debian version
+
 2004-03-09 Tuesday 09:39  sfpavel
 
 	* make/makefile.wcw (hptkill-1_12-stable.3): Fix Watcom/w32
