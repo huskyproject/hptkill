@@ -4,6 +4,7 @@ LFLAGS   = -s -L../fidoconf -L../smapi
 
 OBJS    = hptkill.o
 SRC_DIR = src/
+#STATIC = -static
 
 all: $(OBJS) \
 	hptkill
@@ -12,7 +13,7 @@ all: $(OBJS) \
 	$(CC) $(CFLAGS) $(SRC_DIR)$*.c
 
 hptkill: $(OBJS)
-	$(CC) $(LFLAGS) -o hptkill $(OBJS) -lsmapilnx -lfidoconfiglnx
+	$(CC) $(LFLAGS) $(STATIC) -o hptkill $(OBJS) -lsmapilnx -lfidoconfiglnx
 
 clean:
 	-rm -f *.o

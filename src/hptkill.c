@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.02";
+char *version = "1.03";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -257,13 +257,17 @@ int delareafromconfig(char *fileName, s_area *area) {
         lastpos = ftell(f);
         fseek(f, 0, SEEK_END);
         endpos = ftell(f);
-        buff = (char*) safe_malloc((size_t) (endpos-lastpos));
-        memset(buff, '\0', (size_t) (endpos-lastpos));
-        fseek(f, lastpos, SEEK_SET);
-        len = fread(buff, sizeof(char), (size_t) endpos-lastpos, f);
-        fseek(f, pos, SEEK_SET);
-        fwrite(buff, sizeof(char), (size_t) len, f);
-        nfree(buff);
+        if (endpos>lastpos) {
+           buff = (char*) safe_malloc((size_t) (endpos-lastpos));
+           memset(buff, '\0', (size_t) (endpos-lastpos));
+           fseek(f, lastpos, SEEK_SET);
+           len = fread(buff, sizeof(char), (size_t) endpos-lastpos, f);
+           fseek(f, pos, SEEK_SET);
+           fwrite(buff, sizeof(char), (size_t) len, f);
+           nfree(buff);
+        } else {
+           len=0;
+        }
 #if defined(__WATCOMC__) || defined(__MINGW32__)
         fflush( f );
         fTruncate( fileno(f), pos+len);
