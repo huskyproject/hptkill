@@ -677,7 +677,7 @@ int main(int argc, char **argv) {
     /* Put mail for links to netmail */
     for (i=0; (unsigned int)i < config->linkCount; i++) {
         if (config->links[i]->msg) {
-            link = &(config->links[i]);
+            link = config->links[i];
             if (link->hisAka.point)
                 fprintf(outlog, "Write message for %u:%u/%u.%u...",
                 link->hisAka.zone ,
