@@ -7,13 +7,6 @@
 #
 include makefile.inc
 
-# Version
-VERMAJOR= 1
-VERMINOR= 9
-VERPATCH= 0
-VERH	= $(VERMAJOR).$(VERMINOR)
-VER	= $(VERH).$(VERPATCH)
-
 ## programs ##
 CC	= cl
 AR	= lib
