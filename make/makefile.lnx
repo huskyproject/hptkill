@@ -1,9 +1,9 @@
 CC       = gcc
-CFLAGS   = -c -g -Wall -O2 -DUNIX -I./h -I/usr/src/packages
-LFLAGS   = -s -L../fidoconf -L../smapi
+CFLAGS   = -c -g -Wall -O2 -DUNIX -I../..
+LFLAGS   = -s -L../../fidoconf -L../../smapi
 
 OBJS    = hptkill.o
-SRC_DIR = src/
+SRC_DIR = ../src/
 #STATIC = -static
 
 all: $(OBJS) \

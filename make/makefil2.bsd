@@ -5,11 +5,11 @@
 # For not use shared libraries uncomment 'STATIC' variable
 
 CC       = gcc
-CFLAGS   = -c -g -Wall -O2 -DUNIX -Ih -I..
-LFLAGS   = -s -L../fidoconf -L../smapi ../smapi/patmat.o ../smapi/setfsize.o
+CFLAGS   = -c -g -Wall -O2 -DUNIX -I../..
+LFLAGS   = -s -L../../fidoconf -L../../smapi ../../smapi/patmat.o ../../smapi/setfsize.o
 
 OBJS    = hptkill.o
-SRC_DIR = src/
+SRC_DIR = ../src/
 #STATIC = -static
 
 all: $(OBJS) \

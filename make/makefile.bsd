@@ -11,8 +11,7 @@
 TARGET= hptkill
 OBJS=   hptkill.o
 
-SRC_DIR= src/
-H_DIR=   h/
+SRC_DIR= ../src/
 
 PREFIX= /usr/local
 
@@ -20,10 +19,10 @@ CC=     gcc
 CFLAGS= -Wall
 CDEFS=  -DUNIX
 COPT=   -O3 -c -g
-INCDIRS= -I./h -I..
+INCDIRS= -I../..
 
 LIBS  = -lsmapibsd -lfidoconfigbsd
-LOPTS = -L../fidoconf -L../smapi
+LOPTS = -L../../fidoconf -L../../smapi
 LFLAGS= -s $(STATIC)
 
 BINDIR= $(PREFIX)/bin

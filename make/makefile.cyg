@@ -1,18 +1,18 @@
 # $Id$
 #
-# Legacy makefile for IBM OS/2 + EMX Runtime library
+# Legacy makefile for Cygwin/mingw
 # Do not support husky build enviroment
 
-SRCDIR= src/
+SRCDIR= ../src/
 
 CC    = gcc
-CFLAGS= -DOS2 -I.. -c -O3
+CFLAGS= -DNT -D__NT__ -DWINNT -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
 COPT  = -O2
-LFLAGS=-Zcrtdll
+LFLAGS= -mno-cygwin
 
 
 OBJS = hptkill.o
-LIBS=../fidoconf/fconfemx.a ../smapi/patmat.o ../smapi/smapiemx.a
+LIBS = ../../smapi/libsmapicyg.a ../../smapi/patmat.o /lib/w32api/libuser32.a ../../fidoconf/libfidoconfigcyg.a
 
 all: hptkill.exe
 
