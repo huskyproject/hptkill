@@ -1,5 +1,5 @@
 /*
- *      hptkill - aeas killer for high Portable Tosser (hpt)
+ *      hptkill - areas killer for high Portable Tosser (hpt)
  *      by Serguei Revtov 2:5021/11.10 || 2:5021/19.1
  *      Some code was taken from hpt/src/areafix.c
  *
@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.1";
+char *version = "1.02";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -104,7 +104,7 @@ void usage(void) {
 
    fprintf(outlog, "hptkill %s\n", version);
    fprintf(outlog, "Areas killing utility\n");
-   fprintf(outlog, "Usage:\n hptkill [-1|-n|-a] [-k] [-f file] [areaname ...]\n");
+   fprintf(outlog, "Usage:\n hptkill [-1|-n|-a] [-k] [-f file] [areaNameMask ...]\n");
    fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
    fprintf(outlog, "   -n - don't send unsubscribe message\n");
    fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
@@ -715,16 +715,16 @@ int main(int argc, char **argv) {
    for ( j=0; j<nareas; j++) {
       found = 0;
 
-      for (i=0; i < config->echoAreaCount && !found; i++) {
-         if (stricmp(config->echoAreas[i].areaName, areas[j])==0){
+      for (i=0; i < config->echoAreaCount; i++) {
+         if (patimat(config->echoAreas[i].areaName, areas[j])==1){
             delete_area(&(config->echoAreas[i]));
             killed++;
             found++;
          }
       }
 
-      for (i=0; i < config->localAreaCount && !found; i++) {
-         if (stricmp(config->localAreas[i].areaName, areas[j])==0){
+      for (i=0; i < config->localAreaCount; i++) {
+         if (patimat(config->localAreas[i].areaName, areas[j])==1){
             delete_area(&(config->localAreas[i]));
             killed++;
             found++;
