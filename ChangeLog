@@ -1,3 +1,8 @@
+2002-10-10 Thursday 10:28  stas_degteff
+
+	* src/hptkill.c (1.23): Prevent compiler warnings "pointer targets
+	in passing arg 1 of `strcpy' differ in signedness"
+
 2002-10-06 Sunday 08:30  sfpavel
 
 	* make/makefile.emx (1.2): Fix EMX build
