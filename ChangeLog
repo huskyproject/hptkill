@@ -1,3 +1,12 @@
+2003-04-15 Tuesday 09:32  andr_lukyanov
+
+	* make/makefile.emx (hptkill-1_12-stable.3): Fixed EMX compilation
+
+2003-04-15 Tuesday 07:04  andr_lukyanov
+
+	* make/makefile.djg (hptkill-1_12-stable.3): Fixed DJGPP
+	compilation
+
 2003-02-25 Tuesday 09:55  sfpavel
 
 	* debian/changelog (hptkill-1_12-stable.4): New debian version:
