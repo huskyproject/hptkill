@@ -1,3 +1,8 @@
+2004-01-14 Wednesday 03:08  andr_lukyanov
+
+	* h/version.h (1.3), src/hptkill.c (1.40): Small fix - remove
+	include fidoconf/version.h
+
 2003-10-27 Monday 12:17  stas_degteff
 
 	* src/hptkill.c (1.39): Fix variable declaration (eTime). (Thanks
