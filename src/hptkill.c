@@ -75,11 +75,12 @@
 #endif
 
 #include <stdlib.h>
+#include "cvsdate.h"
 
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.10";
+char *version = "1.11";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -98,7 +99,7 @@ typedef struct xmsgtxt {
 
 void usage(void) {
 
-    fprintf(outlog, "hptkill %s\n", version);
+    fprintf(outlog, "hptkill %s %s\n", version, cvs_date);
     fprintf(outlog, "Areas killing utility\n");
     fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
     fprintf(outlog, "   -c config-file - specify alternate config file\n");
