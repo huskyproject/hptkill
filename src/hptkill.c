@@ -124,26 +124,6 @@ void usage(void) {
 
 }
 
-char *strseparate(char **pp, const char *delim)
-{
-    char *p, *q;
-
-    if ((p = *pp) == '\0')
-	return 0;
-
-    if (!*p) return 0;
-
-    if ((q = strpbrk (p, delim)) != NULL)
-	{
-	    *pp = q + 1;
-	    *q = '\0';
-	    while (**pp && strchr(delim, **pp)) (*pp)++;
-	}
-    else
-	*pp = 0;
-    return p;
-}
-
 void exit_err(char *text)
 {
     fprintf(outlog, "exiting: %s\n", text);
