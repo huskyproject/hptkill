@@ -225,15 +225,14 @@ int makeRequestToLink (char *areatag, s_link *link) {
 }
 
 char *createDupeFileName(s_area *area) {
-    char *name=NULL, *afname, *retname=NULL;
+    char *name=NULL, *ptr, *retname=NULL;
 
     if (!area->DOSFile) {
-	xstrcat(&name, area->areaName);
+        name = makeMsgbFileName(config, area->areaName);
     } else {
-	if (area->fileName)
-	    xstrcat(&name,(afname=strrchr(area->fileName,PATH_DELIM))
-		    ? afname+1 : area->fileName);
-	else xstrcat(&name, "passthru");
+        if (area->fileName) xstrcat(&name, (ptr = strrchr(area->fileName,PATH_DELIM))
+            ? ptr+1 : area->fileName);
+        else xscatprintf(&name, "%X", strcrc32(area->areaName,0xFFFFFFFFUL) );
     }
 
     switch (config->typeDupeBase) {
