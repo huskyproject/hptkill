@@ -1,0 +1,30 @@
+# $Id$
+#
+# Legacy makefile for Cygwin/mingw
+# Do not support husky build enviroment
+
+SRCDIR= src/
+
+CC    = gcc
+CFLAGS= -DNT -D__NT__ -DWINNT -I.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
+COPT  = -O2
+LFLAGS= -mno-cygwin
+
+
+OBJS = hptkill.o
+LIBS = ../smapi/libsmapicyg.a ../smapi/patmat.o /lib/w32api/libuser32.a ../fidoconf/libfidoconfigcyg.a
+
+all: hptkill.exe
+
+%.o: $(SRCDIR)%.c
+	$(CC) $(COPT) $(CFLAGS) $(SRCDIR)$*.c
+
+hptkill.exe: $(OBJS)
+	$(CC) $(LFLAGS) -o hptkill.exe $(OBJS) $(LIBS)
+
+clean:
+	-rm -f *.o
+
+distclean: clean
+	-rm hptkill.exe
+	-rm hptkill.?.gz
