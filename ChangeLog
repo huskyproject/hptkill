@@ -1,3 +1,16 @@
+2003-10-20 Monday 06:23  andr_lukyanov
+
+	* make/makefile.mvcdll (1.8): Fix MSVC compilation
+
+2003-10-20 Monday 05:47  andr_lukyanov
+
+	* make/makefile.mvcdll (1.7): Fix MSVC compilation
+
+2003-10-20 Monday 00:14  andr_lukyanov
+
+	* make/: makefile.cyg (1.9), makefile.djg (1.9), makefile.emx
+	(1.10), makefile.inc (1.1): Fix compilation with huskymak.cfg.*
+
 2003-05-14 Wednesday 15:31  nssoft
 
 	* Makefile (1.8): Change OBJ to _OBJ, and EXE to _EXE.
