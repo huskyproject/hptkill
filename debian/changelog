@@ -1,3 +1,13 @@
+hptkill (1.11-20030207-1) unstable; urgency=low
+
+  * New cvs version
+  * Update depends
+  * Build with common huskymak.cfg from huskybase package
+  * Update standarts to 3.5.8
+  * Fix lintian warnings
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Fri,  7 Feb 2003 14:33:51 +0500
+
 hptkill (1.10-20021022-1) unstable; urgency=low
 
   * New cvs version
