@@ -65,6 +65,7 @@
 #include "version.h"
 
 s_fidoconfig *config;
+s_robot *robot;
 
 FILE *outlog;
 char *versionStr;
@@ -208,13 +209,15 @@ int makeRequestToLink (char *areatag, s_link *link) {
     if (link->msg == NULL) 
     {
         msg = makeMessage(link->ourAka, &(link->hisAka), config->sysop,
-            link->RemoteRobotName ? link->RemoteRobotName : "areafix",
-            link->areaFixPwd ? link->areaFixPwd : "\x00", 1,
-            config->areafixReportsAttr);
+            link->areafix.name ? link->areafix.name : "areafix",
+            link->areafix.pwd ? link->areafix.pwd : "\x00", 1,
+            link->areafix.reportsAttr ? link->areafix.reportsAttr : robot->reportsAttr);
         msg->text = createKludges(config, NULL, link->ourAka, &(link->hisAka),
             "hptkill");
-        if (config->areafixReportsFlags)
-            xstrscat(&(msg->text), "\001FLAGS ", config->areafixReportsFlags, "\r",NULL);
+        if (link->areafix.reportsFlags)
+            xstrscat(&(msg->text), "\001FLAGS ", link->areafix.reportsFlags, "\r",NULL);
+        else if (robot->reportsFlags)
+            xstrscat(&(msg->text), "\001FLAGS ", robot->reportsFlags, "\r",NULL);
         link->msg = msg;
     } else {
         msg = link->msg;
@@ -266,12 +269,12 @@ void update_queue(s_area *area)
     char seps[]   = " \t\n";
     char upDate   = 0;
 
-    if(!config->areafixQueueFile)
+    if(!robot->queueFile)
         return;
 
-    if ( !(queryFile = fopen(config->areafixQueueFile,"a+b")) ) /* can't open query file */
+    if ( !(queryFile = fopen(robot->queueFile,"a+b")) ) /* can't open query file */
     {
-       w_log(LL_ERR, "Can't open areafixQueueFile %s: %s", config->areafixQueueFile, strerror(errno) );
+       w_log(LL_ERR, "Can't open areafixQueueFile %s: %s", robot->queueFile, strerror(errno) );
        return;
     }
     rewind(queryFile);
@@ -291,7 +294,7 @@ void update_queue(s_area *area)
     {
         time_t eTime;
         struct  tm t1,t2;
-        eTime = tnow + config->killedRequestTimeout*secInDay;
+        eTime = tnow + robot->killedRequestTimeout*secInDay;
         t1 = *localtime( &tnow );
         t2 = *localtime( &eTime );
         xscatprintf( &line , "%s %s %d-%02d-%02d@%02d:%02d\t%d-%02d-%02d@%02d:%02d" ,
@@ -581,6 +584,12 @@ int main(int argc, char **argv) {
     
     if (!config) {
         fprintf(outlog, "Could not read fido config\n");
+        return (1);
+    }
+
+    robot = getRobot(config, "areafix", -1);
+    if (!robot) {
+        fprintf(outlog, "Could not find robot 'areafix' in config\n");
         return (1);
     }
 
