@@ -1,3 +1,11 @@
+hptkill (1.12.0+beta1-2) unstable; urgency=low
+
+  * Place hptkill package to main. Now smapi has LGPL license and
+    hptkill does not depends from non-free packages
+  * Minor fixes for debian/rules
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Wed, 19 Feb 2003 11:16:45 +0500
+
 hptkill (1.12.0+beta1-1) unstable; urgency=low
 
   * New stable branch
