@@ -11,7 +11,7 @@ CC	= gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -D__NT__ -DWIN32 -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
+CFLAGS	= -D__NT__ -DWIN32 -I../h -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
 COPT	= -O2
 LFLAGS	= -L../../smapi -L../../fidoconf -mno-cygwin 
 

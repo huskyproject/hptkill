@@ -12,7 +12,7 @@ CC	= gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -Wall -I../..
+CFLAGS	= -Wall -I../h
 CDEFS	= -DUNIX
 COPT	= -O3 -c -g
 LFLAGS	= -s -L../../fidoconf -L../../smapi

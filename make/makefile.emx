@@ -11,7 +11,7 @@ CC	= gcc
 RM	= del
 RMOPT	=
 
-CFLAGS	= -D__OS2__ -I../.. -c
+CFLAGS	= -D__OS2__ -I../h -c
 COPT	= -O2
 LFLAGS	= -Zcrtdll
 

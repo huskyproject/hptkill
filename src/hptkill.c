@@ -63,13 +63,8 @@
 #include <fidoconf/xstr.h>
 #include <fidoconf/log.h>
 #include <fidoconf/afixcmd.h>
-#include <fidoconf/version.h>
 
-#define VER_MAJOR 1
-#define VER_MINOR 11
-#define VER_PATCH 0
-#define VER_BRANCH BRANCH_CURRENT
-
+#include "version.h"
 #include "cvsdate.h"
 
 s_fidoconfig *config;
