@@ -589,26 +589,26 @@ int main(int argc, char **argv) {
 
     int i, j, k;
     struct _minf m;
-    char **areas=NULL;
-    char *needfree=NULL;
-    char *line;
+    char **areas = NULL;
+    char *needfree = NULL;
+    char *line = NULL;
     int nareas=0;
-    int found;
-    FILE *f;
-    s_xmsgtxt *xmsgtxt;
-    s_link *link;
-    int killed=0;
-    int checkPaused=0;
+    int found = 0;
+    FILE *f = NULL;
+    s_xmsgtxt *xmsgtxt = NULL;
+    s_link *link = NULL;
+    int killed = 0;
+    int checkPaused = 0;
     int killNoLink = 0;
     int killOld = 0;
     int killWithoutDupes = 0;
-    int delArea;
-    time_t oldest;
-    s_area *area;
+    int delArea = 0;
+    time_t oldest = 0;
+    s_area *area = NULL;
     struct stat stbuf;
-    char *listNoDupeFile=NULL;
-    FILE *fNoDupe=NULL;
-    char *dupename;
+    char *listNoDupeFile = NULL;
+    FILE *fNoDupe = NULL;
+    char *dupename = NULL;
 
 
 
