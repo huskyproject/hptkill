@@ -45,7 +45,7 @@ $(OBJS): $(SRC_DIR)\*.c
 
 programs: $(OBJS)
   @echo linking $(TARGET)
-  $(RANLIB) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
+  $(RANLIB) $(LFLAGS) $(OBJS) $(EXENAMEFLAG) $(TARGET) $(LIBS)
 
 man:
 
