@@ -13,16 +13,16 @@ SRC_DIR = src/
 #STATIC = -static
 
 all: $(OBJS) \
-        hptkill
+	hptkill
 
 %.o: $(SRC_DIR)%.c
-        $(CC) $(CFLAGS) $(SRC_DIR)$*.c
+	$(CC) $(CFLAGS) $(SRC_DIR)$*.c
 
 hptkill: $(OBJS)
-        $(CC) $(LFLAGS) $(STATIC) -o hptkill $(OBJS) -lsmapibsd -lfidoconfigbsd
+	$(CC) $(LFLAGS) $(STATIC) -o hptkill $(OBJS) -lsmapibsd -lfidoconfigbsd
 
 clean:
-        -rm -f *.o
-        -rm -f *~
-        -rm -f hptkill
-        -rm -f core
+	-rm -f *.o
+	-rm -f *~
+	-rm -f hptkill
+	-rm -f core
