@@ -1,3 +1,10 @@
+hptkill (1.12.0+rc0-1) unstable; urgency=low
+
+  * New stable branch
+  * Add HISTORY to documentation
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Tue, 11 Feb 2003 13:46:09 +0500
+
 hptkill (1.11-20030207-1) unstable; urgency=low
 
   * New cvs version
