@@ -63,12 +63,11 @@
 #include <fidoconf/afixcmd.h>
 
 #include "version.h"
-#include "cvsdate.h"
 
 s_fidoconfig *config;
 
 FILE *outlog;
-char *VERSION;
+char *versionStr;
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -433,9 +432,9 @@ int main(int argc, char **argv) {
     outlog=stdout;
     setbuf(outlog, NULL);
     
-    VERSION = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
+    versionStr = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
                                VER_BRANCH, cvs_date );
-    fprintf(outlog,"%s\n", VERSION);
+    fprintf(outlog,"%s\n", versionStr);
     
     for (i=1; i<argc; i++) {
         if ( argv[i][0] == '-' ) {
