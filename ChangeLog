@@ -1,3 +1,9 @@
+2002-12-26 Thursday 12:40  stas_degteff
+
+	* make/: makefil2.bsd, makefile.bsd, makefile.emx, makefile.lnx,
+	makefile.wco (hptkill-1_10-stable.[1,1,1,1,1]): compile with 
+	-DNOSEMAPHORES
+
 2002-11-10 Sunday 09:05  sfpavel
 
 	* debian/changelog, src/hptkill.c (hptkill-1_10-stable.[2,2])
