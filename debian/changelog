@@ -1,3 +1,11 @@
+hptkill (1.10-20020829-1) unstable; urgency=low
+
+  * Write man page
+  * Clean up debian/rules
+  * No CVS directories in source tarball
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Fri, 30 Aug 2002 15:33:49 +0600
+
 hptkill (1.10-20020822-2) unstable; urgency=low
 
   * debian/copyright: new http-location of sources

@@ -29,28 +29,22 @@ configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
 	
-
 	touch configure-stamp
 
 build: build-stamp
 
 build-stamp: configure-stamp 
 	dh_testdir
-
 	# Add here commands to compile the package.
 	$(MAKE)
-	#/usr/bin/docbook-to-man debian/hptkill.sgml > hptkill.1
-
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
 	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
-
+	-$(MAKE) distclean
 	dh_clean
 
 install: build
@@ -58,7 +52,6 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-
 	# Add here commands to install the package into debian/hptkill.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/hptkill
 

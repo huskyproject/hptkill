@@ -37,13 +37,16 @@ endif
 
 CDEFS=-D$(OSTYPE) $(ADDCDEFS)
 
-all: $(OBJS) hptkill$(EXE)
+all: $(OBJS) hptkill$(EXE) hptkill.1.gz
 
 %$(OBJ): $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
 
 hptkill$(EXE): $(OBJS)
 	$(CC) $(LFLAGS) -o hptkill$(EXE) $(OBJS) $(LIBS)
+
+hptkill.1.gz : hptkill.1
+	gzip -9c hptkill.1 > hptkill.1.gz
 
 clean:
 	-$(RM) $(RMOPT) *$(OBJ)
@@ -52,10 +55,13 @@ clean:
 
 distclean: clean
 	-$(RM) $(RMOPT) hptkill$(EXE)
+	-$(RM) $(RMOPT) hptkill.1.gz
 
-install: hptkill$(EXE)
+install: hptkill$(EXE) hptkill.1.gz
 	$(INSTALL) $(IBOPT) hptkill$(EXE) $(BINDIR)
+	$(INSTALL) $(IMOPT) hptkill.1.gz $(MANDIR)/man1
 
 uninstall:
 	$(RM) $(RMOPT) $(BINDIR)$(DIRSEP)hptkill$(EXE)
+	$(RM) $(RMOPT) $(MANDIR)$(DIRSEP)man1$(DIRSEP)hptkill.1.gz
 
