@@ -70,7 +70,7 @@
 s_fidoconfig *config;
 
 FILE *outlog;
-char *VERSION;
+char *versionStr = NULL;
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -85,28 +85,28 @@ const   long    secInDay = 3600*24;
 
 void usage(void) {
 
-    fprintf(outlog, "Areas killing utility\n");
-    fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
-    fprintf(outlog, "   -c config-file - specify alternate config file\n");
-    fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
-    fprintf(outlog, "   -n - don't send unsubscribe message\n");
-    fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
-    fprintf(outlog, "   -d - delete area from config\n");
-    fprintf(outlog, "   -s - save (don't erase) message & dupe bases\n");
-    fprintf(outlog, "   -f file - read areas list from file in addition to args\n");
-    fprintf(outlog, "   -f -    - read areas list from stdin in addition to args\n");
-    fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
-    fprintf(outlog, "   -pp - same as -p including paused links\n");
-    fprintf(outlog, "   -y - find & kill ANY echoareas with <=1 links\n");
-    fprintf(outlog, "   -yp - same as -y including paused links\n");
-    fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
-    fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
-    fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
-    fprintf(outlog, "   -C - create empty dupebase if it doesn't exist\n");
-    fprintf(outlog, "\nDefault settings:\n");
-    fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
-    fprintf(outlog, " -  leave config unchanged\n");
-    fprintf(outlog, " -  erase message & dupe bases\n");
+    printf(
+    "Usage: hptkill [options] [areaNameMask ...]\n"
+    "Options:  -c config-file - specify alternate config file\n"
+    "\t  -1 - send unsubscribe message to first link only\n"
+    "\t  -n - don't send unsubscribe message\n"
+    "\t  -a - send unsubscribe message all subscribed links\n"
+    "\t  -d - delete area from config\n"
+    "\t  -s - save (don't erase) message & dupe bases\n"
+    "\t  -f file - read areas list from file in addition to args\n"
+    "\t  -f -    - read areas list from stdin in addition to args\n"
+    "\t  -p - find & kill passthrough echoareas with <=1 links\n"
+    "\t  -pp - same as -p including paused links\n"
+    "\t  -y - find & kill ANY echoareas with <=1 links\n"
+    "\t  -yp - same as -y including paused links\n"
+    "\t  -o num - kill passthrough area with dupebase older 'num' days\n"
+    "\t  -O num - same as -o but kill areas without dupebases\n"
+    "\t  -l file - with -o/-O write to file list of areas without dupebase\n"
+    "\t  -C - create empty dupebase if it doesn't exist\n"
+    "\nDefault settings:\n"
+    " -  send unsubscribe message to subcribed nodes only\n"
+    " -  leave config unchanged\n"
+    " -  erase message & dupe bases\n");
     exit(-1);
 
 }
@@ -208,7 +208,7 @@ int putMsgInArea(s_area *echo, s_message *msg)
 int makeRequestToLink (char *areatag, s_link *link) {
     s_message *msg;
 
-    if (link->msg == NULL) 
+    if (link->msg == NULL)
     {
         msg = makeMessage(link->ourAka, &(link->hisAka), config->sysop,
             link->RemoteRobotName ? link->RemoteRobotName : "areafix",
@@ -290,7 +290,7 @@ void update_queue(s_area *area)
         nfree(line);
     }
     nfree(line)
-    
+
     if (upDate == 0)
     {
         long eTime;
@@ -349,7 +349,7 @@ void husky_delete_area(s_area *area)
 	break;
     }
 
-  
+
     /* delete msgbase and dupebase for the area */
     if (eraseBase) {
 
@@ -401,12 +401,12 @@ void husky_delete_area(s_area *area)
 	    config->echoAreaCount--;
 	}
     }
-    fprintf(outlog, "done\n"); 
+    fprintf(outlog, "done\n");
 }
 
 
 int main(int argc, char **argv) {
-    
+
     int i, j;
     UINT k;
     struct _minf m;
@@ -431,15 +431,15 @@ int main(int argc, char **argv) {
     FILE *fNoDupe = NULL;
     char *dupename = NULL;
     char *cfgfile = NULL;
-    
-    
+
+
     outlog=stdout;
     setbuf(outlog, NULL);
-    
-    VERSION = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
+
+    versionStr = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
                                VER_BRANCH, cvs_date );
-    fprintf(outlog,"%s\n", VERSION);
-    
+    fprintf(outlog,"%s\n\n", versionStr);
+
     for (i=1; i<argc; i++) {
         if ( argv[i][0] == '-' ) {
             switch (argv[i][1])
@@ -455,36 +455,36 @@ int main(int argc, char **argv) {
             case '1': /* send unsubscribe message to first link only */
                 sendUnSubscribe = eFirstLink;
                 break;
-                
+
             case 'n': /* don't send unsubscribe message */
             case 'N':
                 sendUnSubscribe = eNobody;
                 break;
-                
+
             case 'a': /* send unsubscribe message all links */
             case 'A':
                 sendUnSubscribe = eAll;
                 break;
-                
+
             case 'd': /* delete area from config */
             case 'D':
                 delFromConfig = 1;
                 break;
-                
+
             case 's': /* save (don't erase) message & dupe bases */
             case 'S':
                 eraseBase = 0;
                 break;
-                
+
             case 'f': /* read areas list from file */
             case 'F':
                 i++;
-                
+
                 if ( argv[i] == NULL || argv[i][0] == '\0') {
                     usage();
                     exit(-1);
                 }
-                
+
                 if (strcmp(argv[i], "-") == 0) {
                     f=stdin;
                 } else {
@@ -493,10 +493,10 @@ int main(int argc, char **argv) {
                         exit(-1);
                     }
                 }
-                
+
                 while (!feof(f)) {
                     line = readLine(f);
-                    
+
                     if (line) {
                         nareas++;
                         areas = (char **)srealloc ( areas, nareas*sizeof(char *));
@@ -504,25 +504,25 @@ int main(int argc, char **argv) {
                         needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
                         needfree[nareas-1] = 1;
                     }
-                    
+
                 }
-                
+
                 if (f != stdin) fclose(f);
                 break;
-                
+
             case 'p': /* kill passthrough areas with 1 link*/
             case 'P':
                 killNoLink++;
                 killPass++;
                 if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
                 break;
-                
+
             case 'y': /* kill ANY areas with <=1 link*/
             case 'Y':
                 killLowLink++;
                 if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
                 break;
-                
+
             case 'o': /* kill passthrough area with dupebase older 'days' days */
             case 'O':
                 if (argv[i][1]=='O') killWithoutDupes++;
@@ -535,7 +535,7 @@ int main(int argc, char **argv) {
                 killOld++;
                 oldest = time(NULL) - atoi(argv[i]) * 60*60*24;
                 break;
-                
+
             case 'l': /* write list of areas without dupebase to file  */
             case 'L':
                 i++;
@@ -545,11 +545,11 @@ int main(int argc, char **argv) {
                 }
                 listNoDupeFile = argv[i];
                 break;
-                
+
             case 'C': /* create empty dupebase if it doesn't exist */
                 createDupe++;
                 break;
-                
+
             default:
                 usage();
                 exit(-1);
@@ -563,7 +563,7 @@ int main(int argc, char **argv) {
         needfree[nareas-1] = 0;
     }
     }
-    
+
     if (nareas == 0) {
         if (killPass || killLowLink) {
             nareas++;
@@ -582,7 +582,7 @@ int main(int argc, char **argv) {
     if( cfgfile && cfgfile[0] )
         config = readConfig(cfgfile);
     else   config = readConfig(getConfigFileName());
-    
+
     if (!config) {
         fprintf(outlog, "Could not read fido config\n");
         return (1);
@@ -593,13 +593,13 @@ int main(int argc, char **argv) {
     m.req_version = 0;
     m.def_zone = (UINT16) config->addr[0].zone;
     if (MsgOpenApi(&m) != 0) fprintf(outlog, "MsgApiOpen Error");
-    
+
     for ( j=0; j<nareas; j++) {
         found = 0;
-        
+
         for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
             if (patimat(area->areaName, areas[j])==1){
-                
+
                 delArea = 0;
                 if (killPass==0 && killLowLink==0) delArea++;
                 else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
@@ -628,7 +628,7 @@ int main(int argc, char **argv) {
                                         }
                                     }
                                     if (fNoDupe) fprintf (fNoDupe, "%s\n", area->areaName);
-                                    
+
                                 }
                             }
                             nfree(dupename);
@@ -652,11 +652,11 @@ int main(int argc, char **argv) {
                         i--;
                         area--;
                     }
-                    
+
                 }
             }
         }
-        
+
         if (killPass==0 && killLowLink==0) {
             for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
                 if (patimat(area->areaName, areas[j])==1){
@@ -669,13 +669,13 @@ int main(int argc, char **argv) {
                     }
                 }
             }
-            
+
             if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
         }
     }
-    
+
     if (fNoDupe) fclose (fNoDupe);
-    
+
     if (killed) fprintf(outlog, "\n");
     /* Put mail for links to netmail */
     for (i=0; (unsigned int)i < config->linkCount; i++) {
@@ -692,17 +692,17 @@ int main(int argc, char **argv) {
                 link->hisAka.zone ,
                 link->hisAka.net  ,
                 link->hisAka.node);
-            
+
             putMsgInArea(&(config->netMailAreas[0]), config->links[i].msg);
             nfree(link->msg);
             fprintf(outlog, "done\n");
         }
     }
-    
+
     for ( j=0; j<nareas; j++) if (needfree[nareas-1]) nfree(areas[j]);
     if (needfree) nfree(needfree);
     if (areas) nfree(areas);
-    
+
     if (killed && config->echotosslog) {
         f=fopen(config->echotosslog, "a");
         if (f==NULL) {
@@ -712,7 +712,7 @@ int main(int argc, char **argv) {
             fclose(f);
         }
     }
-    
+
     if (createDupe) {
         for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
             dupename = createDupeFileName(area);
@@ -728,10 +728,10 @@ int main(int argc, char **argv) {
             nfree(dupename);
         }
     }
-    
+
     /* deinit SMAPI */
     MsgCloseApi();
-    
+
     disposeConfig(config);
     fprintf(outlog,"Done\n");
     return (0);
