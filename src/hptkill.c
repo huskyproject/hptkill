@@ -32,7 +32,7 @@
 #include <time.h>
 #include <string.h>
 
-#include <smapi/compiler.h>
+#include <huskylib/compiler.h>
 
 #ifdef HAS_PROCESS_H
 #  include <process.h>
@@ -56,8 +56,6 @@
 #endif
 
 #include <smapi/msgapi.h>
-#include <smapi/prog.h>
-#include <smapi/progprot.h>
 #include <fidoconf/fidoconf.h>
 #include <fidoconf/common.h>
 #include <fidoconf/xstr.h>
