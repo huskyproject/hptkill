@@ -1,3 +1,8 @@
+2002-08-18 Sunday 16:45  d_sergienko
+
+	* makefil2.bsd (1.2): replaced spaces by tabs and removed \r from
+	the end of lines
+
 2002-07-18 Thursday 19:39  stas
 
 	* makefile.cyg (1.1): makefile for cygwin
