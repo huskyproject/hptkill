@@ -1,63 +1,69 @@
 # $Id$
 #
-# Microsoft Visual C++ Makefile for build hptkill static library
+# Microsoft Visual C++ Makefile for build static program(s)
+# No support for the Husky build environment.
+#
+# Tested on MS Visual C 6.0
+#
+include makefile.inc
 
-SRC_DIR	= ..\src
-
-PREFIX	= \fidonet
-
+## programs ##
 CC	= cl
+AR	= lib
+LINK	= link
+RANLIB	=
 RM	= del
-RMOPT	=
 
+## file suffixes ##
+_C	  = .c
+_OBJ	  = .obj
+_EXP	  = .exp
+_LIB	  = .lib
+_DLL	  = .dll 
+_EXE	  = .exe
+
+## programs ##
 CFLAGS	= -nologo -Zp1
-CINCL	= -I..\h -I..\..\fidoconf -I..\..\smapi -I..\..\huskylib
-CDEFS	= -D__NT__ -D_CONSOLE
-COPT	= -O2
-TLIB	= lib -nologo
+CINCL	= -I$(H_DIR) -I..\..\fidoconf -I..\..\smapi -I..\..\huskylib
+CDEFS	= -D__NT__ -DNT -DWINNT -DWIN32 -D_CONSOLE
+COPT	= -Ob2
 
-LIBS	= ..\..\smapi\make\smapimvc.lib ..\..\fidoconf\fconfmvc.lib \
-	  ..\..\huskylib\make\huskymvc.lib
-
-EXENAME	= hptkill
 EXENAMEFLAG = -Fe
 
-OBJ	= .obj
-EXE	= .exe
+LIBS	= ..\..\fidoconf\make\fconfmvc.lib ..\..\smapi\make\smapimvc.lib \
+	  ..\..\huskylib\make\huskymvc.lib
 
-TARGET	= $(EXENAME)$(EXE)
-
-BINDIR	= $(PREFIX)\bin
-DOCDIR	= $(PREFIX)\doc
-IBOPT	= /z
-DIROPT	=
-INSTALL	= copy
-
-default: all
+default:
+	@echo Run 'make programs' to build static version of programs ($(PROGRAMS))
+	@echo Run 'make all' to build all above
 
 all: programs
+programs: $(PROGRAMS)
 
-programs: 
-        $(CC) $(CFLAGS) $(CINCL) $(CDEFS) $(COPT) \
-	$(EXENAMEFLAG)$(TARGET) $(SRC_DIR)\$(EXENAME).c $(LIBS)
+{$(_SRC_DIR)}$(_C)$(_OBJ):
+	@$(CC) $(CFLAGS) $(CINCL) $(CDEFS) $(COPT) -c $<
+
+$(PROGRAMS): $(OBJS)
+	@echo Create $(PROGRAMS)...
+	@$(CC) $(CFLAGS) $(CINCL) $(COPT) $(CDEFS) $(EXENAMEFLAG)$@ $** $(LIBS)
 
 man:
 
 doc: man
-	man2html$(EXE) <..\$(EXENAME).1 >$(EXENAME).html
+	man2html$(_EXE) <..\$(LIBNAME).1 >$(LIBNAME).html
 
 clean:
-	-$(RM) $(RMOPT) *$(OBJ)
+	-$(RM) $(RMOPT) *$(_OBJ)
 
 distclean: clean
-	-$(RM) $(RMOPT) $(TARGET)
-	-$(RM) $(RMOPT) $(EXENAME).html
+	-$(RM) $(RMOPT) $(PROGRAMS)
+	-$(RM) $(RMOPT) $(LIBNAME).html
 
 install: programs doc
-	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
-	$(INSTALL) $(IBOPT) ..\$(EXENAME).1 $(DOCDIR)
-	$(INSTALL) $(IBOPT) $(EXENAME).html $(DOCDIR)
+	$(INSTALL) $(IBOPT) $(PROGRAMS) $(BINDIR)
+	$(INSTALL) $(IBOPT) ..\$(LIBNAME).1 $(DOCDIR)
+	$(INSTALL) $(IBOPT) $(LIBNAME).html $(DOCDIR)
 
 uninstall:
-	-$(RM) $(RMOPT) $(BINDIR)\$(TARGET)
-	-$(RM) $(RMOPT) $(DOCDIR)\$(EXENAME).html
+	-$(RM) $(RMOPT) $(BINDIR)\$(PROGRAMS)
+	-$(RM) $(RMOPT) $(DOCDIR)\$(LIBNAME).html
