@@ -75,8 +75,10 @@
 
 #include <stdlib.h>
 
+#ifdef _MAKE_DLL_MVC_
 extern char *curconfname;
 extern long curconfpos;
+#endif
 s_fidoconfig *config;
 
 FILE *outlog;
@@ -227,8 +229,13 @@ int delareafromconfig(char *fileName, s_area *area) {
 	    if (stricmp(token, "echoarea")==0) {
 		token = strseparate(&cfgline, " \t");
 		if (stricmp(token, areaName)==0) {
-		    fileName = safe_strdup(curconfname);
-		    pos = curconfpos;
+		  #ifdef _MAKE_DLL_MVC_
+		   fileName = safe_strdup(getCurConfName());
+                   pos = getCurConfPos();
+                  #else
+                   fileName = safe_strdup(curconfname);
+		   pos = curconfpos;
+		  #endif
 		    break;
 		}
 	    }
