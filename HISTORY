@@ -1,0 +1,11 @@
+HPTKILL 1.12 stable
+Changes after HPTKILL 1.10
+
+1. MAJOR feature improvements:
+   - update queryfile when unlink from uplinks;
+   - Implement husky-standart version string generation.
+
+2. CONFIG changes:
+
+3. IMPORTANT bugfixes:
+   - general code review.
