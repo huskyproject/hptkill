@@ -82,28 +82,28 @@ const   long    secInDay = 3600*24;
 
 void usage(void) {
 
-    fprintf(outlog, "Areas killing utility\n");
-    fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
-    fprintf(outlog, "   -c config-file - specify alternate config file\n");
-    fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
-    fprintf(outlog, "   -n - don't send unsubscribe message\n");
-    fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
-    fprintf(outlog, "   -d - delete area from config\n");
-    fprintf(outlog, "   -s - save (don't erase) message & dupe bases\n");
-    fprintf(outlog, "   -f file - read areas list from file in addition to args\n");
-    fprintf(outlog, "   -f -    - read areas list from stdin in addition to args\n");
-    fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
-    fprintf(outlog, "   -pp - same as -p including paused links\n");
-    fprintf(outlog, "   -y - find & kill ANY echoareas with <=1 links\n");
-    fprintf(outlog, "   -yp - same as -y including paused links\n");
-    fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
-    fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
-    fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
-    fprintf(outlog, "   -C - create empty dupebase if it doesn't exist\n");
-    fprintf(outlog, "\nDefault settings:\n");
-    fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
-    fprintf(outlog, " -  leave config unchanged\n");
-    fprintf(outlog, " -  erase message & dupe bases\n");
+    printf(
+    "Usage: hptkill [options] [areaNameMask ...]\n"
+    "Options:  -c config-file - specify alternate config file\n"
+    "\t  -1 - send unsubscribe message to first link only\n"
+    "\t  -n - don't send unsubscribe message\n"
+    "\t  -a - send unsubscribe message all subscribed links\n"
+    "\t  -d - delete area from config\n"
+    "\t  -s - save (don't erase) message & dupe bases\n"
+    "\t  -f file - read areas list from file in addition to args\n"
+    "\t  -f -    - read areas list from stdin in addition to args\n"
+    "\t  -p - find & kill passthrough echoareas with <=1 links\n"
+    "\t  -pp - same as -p including paused links\n"
+    "\t  -y - find & kill ANY echoareas with <=1 links\n"
+    "\t  -yp - same as -y including paused links\n"
+    "\t  -o num - kill passthrough area with dupebase older 'num' days\n"
+    "\t  -O num - same as -o but kill areas without dupebases\n"
+    "\t  -l file - with -o/-O write to file list of areas without dupebase\n"
+    "\t  -C - create empty dupebase if it doesn't exist\n"
+    "\nDefault settings:\n"
+    " -  send unsubscribe message to subcribed nodes only\n"
+    " -  leave config unchanged\n"
+    " -  erase message & dupe bases\n");
     exit(-1);
 
 }
@@ -434,7 +434,7 @@ int main(int argc, char **argv) {
     
     versionStr = GenVersionStr( "hptkill", VER_MAJOR, VER_MINOR, VER_PATCH,
                                VER_BRANCH, cvs_date );
-    fprintf(outlog,"%s\n", versionStr);
+    fprintf(outlog,"%s\n\n", versionStr);
     
     for (i=1; i<argc; i++) {
         if ( argv[i][0] == '-' ) {
