@@ -2,6 +2,10 @@ hptkill 1.10
 ---------
 
 ----- cvs ci ------
+Fri Apr 26 12:06:49 EEST 2002 (patch from Andr Luk'yanov)
+* added makefile.wco
+
+----- cvs ci ------
 Thu Jan 31 16:57:11 MSK 2002
 max (patch from Serguei Revtov):
 * '-c' option

@@ -1,0 +1,24 @@
+CC      = wcc386
+LINK    = WLINK
+SRC     = src
+
+CFLAGS  = -zq -wx -bt=os2v2 -j -ih;.. -oneatx -5 -DOS2
+LFLAGS  = system os2v2
+
+OBJS = hptkill.obj
+
+all: $(OBJS) hptkill.exe
+
+$(OBJS): $(SRC)\*.c
+  @echo compiling $*.c
+  $(CC) $(CFLAGS) $(SRC)\$*.c
+
+hptkill.exe: $(OBJS)
+  @echo linking hptkill
+  $(LINK) $(LFLAGS) FILE hptkill.obj Library ..\smapi\smapiwco.lib, ..\fidoconf\fconfwco.lib NAME hptkill.exe
+
+clean:
+	-DEL *.OBJ
+	-DEL *.err
+	-DEL hptkill.exe
+
