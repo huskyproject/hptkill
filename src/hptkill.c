@@ -65,10 +65,6 @@
 #include <fidoconf/fidoconf.h>
 #include <fidoconf/common.h>
 #include <fidoconf/xstr.h>
-//#include <strsep.h>
-//#include <fcommon.h>
-//#include <global.h>
-//#include <dupe.h>
 
 #include <string.h>
 
@@ -81,11 +77,10 @@
 
 extern char *curconfname;
 extern long curconfpos;
-//s_message **msgToSysop = NULL;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.08";
+char *version = "1.09";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -96,8 +91,8 @@ int     killSend = 0;
 int     killPass = 0;
 
 typedef struct xmsgtxt {
-        XMSG xmsg;
-        char *text;
+	XMSG xmsg;
+	char *text;
 } s_xmsgtxt;
 
 
@@ -105,7 +100,7 @@ void usage(void) {
 
     fprintf(outlog, "hptkill %s\n", version);
     fprintf(outlog, "Areas killing utility\n");
-    fprintf(outlog, "Usage:\n hptkill [-1|-n|-a] [-k] [-p] [-f file] [areaNameMask ...]\n");
+    fprintf(outlog, "Usage:\n hptkill [options] [areaNameMask ...]\n");
     fprintf(outlog, "   -1 - send unsubscribe message to first link only\n");
     fprintf(outlog, "   -n - don't send unsubscribe message\n");
     fprintf(outlog, "   -a - send unsubscribe message all subscribed links\n");
@@ -117,6 +112,8 @@ void usage(void) {
     fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
     fprintf(outlog, "   -pp - same as -p including paused links\n");
     fprintf(outlog, "   -o days - kill passthrough area with dupebase older 'days' days\n");
+    fprintf(outlog, "   -O days - same as -o but kill areas without dupebases\n");
+    fprintf(outlog, "   -l file - with -o/-O write to file list of areas without dupebase\n");
     fprintf(outlog, "\nDefault settings:\n");
     fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
     fprintf(outlog, " -  leave config unchanged\n");
@@ -454,14 +451,14 @@ int makeRequestToLink (char *areatag, s_link *link) {
 	preTime = curTime;
 
 	if (link->ourAka->point)
-            xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u.%u %08lx\r",
+	    xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u.%u %08lx\r",
 			link->ourAka->zone,
 			link->ourAka->net,
 			link->ourAka->node,
 			link->ourAka->point,
 			(unsigned long) curTime);
 	else
-            xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u %08lx\r",
+	    xscatprintf(&(xmsgtxt->text), "\001MSGID: %u:%u/%u %08lx\r",
 			link->ourAka->zone,
 			link->ourAka->net,
 			link->ourAka->node,
@@ -622,12 +619,15 @@ int main(int argc, char **argv) {
     int checkPaused=0;
     int killNoLink = 0;
     int killOld = 0;
+    int killWithoutDupes = 0;
     int delArea;
     time_t oldest;
     s_area *area;
     struct stat stbuf;
+    char *listNoDupeFile=NULL;
+    FILE *fNoDupe=NULL;
 
-   
+
 
     outlog=stdout;
 
@@ -709,6 +709,7 @@ int main(int argc, char **argv) {
 
 		case 'o': /* kill passthrough area with dupebase older 'days' days */
 		case 'O':
+		    if (argv[i][1]=='O') killWithoutDupes++;
 		    i++;
 		    if ( argv[i] == NULL || argv[i][0] == '\0') {
 			usage();
@@ -717,6 +718,16 @@ int main(int argc, char **argv) {
 		    killPass++;
 		    killOld++;
 		    oldest = time(NULL) - atoi(argv[i]) * 60*60*24;
+		    break;
+
+		case 'l': /* write list of areas without dupebase to file  */
+		case 'L':
+		    i++;
+		    if ( argv[i] == NULL || argv[i][0] == '\0') {
+			usage();
+			exit(-1);
+		    }
+		    listNoDupeFile = argv[i];
 		    break;
 
 		default:
@@ -780,8 +791,22 @@ int main(int argc, char **argv) {
 		    if (killOld && !delArea && area->dupeCheck != dcOff) {
 			char *dupename = createDupeFileName(area);
 			if (dupename) {
-			    if (stat(dupename, &stbuf)==0 &&
-				stbuf.st_mtime < oldest) delArea++;
+			    if (stat(dupename, &stbuf)==0) {
+				if (stbuf.st_mtime < oldest) delArea++;
+			    } else {
+				if (killWithoutDupes) {
+				    delArea++;
+				}
+				if (listNoDupeFile) {
+				    if (!fNoDupe) {
+					if (!(fNoDupe=fopen (listNoDupeFile, "a"))) {
+					    fprintf (stderr, "Can't open file '%s' for appending\n", listNoDupeFile);
+					}
+				    }
+				    if (fNoDupe) fprintf (fNoDupe, "%s\n", area->areaName);
+
+				}
+			    }
 			    nfree(dupename);
 			}
 		    }
@@ -794,7 +819,7 @@ int main(int argc, char **argv) {
 			i--;
 			area--;
 		    }
- 
+
 		}
 	    }
 	}
@@ -815,6 +840,8 @@ int main(int argc, char **argv) {
 	    if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
 	}
     }
+
+    if (fNoDupe) fclose (fNoDupe);
 
     if (killed) fprintf(outlog, "\n");
     // Put mail for links to netmail
