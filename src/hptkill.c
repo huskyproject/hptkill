@@ -676,7 +676,7 @@ int main(int argc, char **argv) {
     if (killed) fprintf(outlog, "\n");
     /* Put mail for links to netmail */
     for (i=0; (unsigned int)i < config->linkCount; i++) {
-        if (config->links[i].msg) {
+        if (config->links[i]->msg) {
             link = &(config->links[i]);
             if (link->hisAka.point)
                 fprintf(outlog, "Write message for %u:%u/%u.%u...",
@@ -690,7 +690,7 @@ int main(int argc, char **argv) {
                 link->hisAka.net  ,
                 link->hisAka.node);
             
-            putMsgInArea(&(config->netMailAreas[0]), config->links[i].msg);
+            putMsgInArea(&(config->netMailAreas[0]), config->links[i]->msg);
             nfree(link->msg);
             fprintf(outlog, "done\n");
         }
