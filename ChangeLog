@@ -1,3 +1,8 @@
+2002-12-27 Friday 13:06  sfpavel
+
+	* debian/changelog, src/hptkill.c (hptkill-1_10-stable.[3,3]):
+	hptkill 1.10.2 release
+
 2002-12-26 Thursday 12:40  stas_degteff
 
 	* make/: makefil2.bsd, makefile.bsd, makefile.emx, makefile.lnx,
