@@ -543,7 +543,7 @@ void delete_area(s_area *area)
 
 	if (area->msgbType!=MSGTYPE_PASSTHROUGH) {
 	    fprintf(outlog, "  Removing base of %s...", an);
-	    rc=MsgDeleteBase(area->fileName, area->msgbType);
+	    rc=MsgDeleteBase(area->fileName, (word) area->msgbType);
 	    fprintf(outlog, "%s\n", rc ? "ok" : "unsuccessful");
 	}
 
