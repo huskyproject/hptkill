@@ -129,26 +129,6 @@ void exit_err(char *text)
     exit(1);
 }
 
-void *safe_malloc(size_t size)
-{
-    void *ptr = malloc (size);
-    if (ptr == NULL) exit_err("out of memory");
-    return ptr;
-}
-
-void *safe_realloc(void *ptr, size_t size)
-{
-    void *newptr = realloc (ptr, size);
-    if (newptr == NULL) exit_err("out of memory");
-    return newptr;
-}
-
-char *safe_strdup(const char *src)
-{
-    char *ptr = strdup (src);
-    if (ptr == NULL) exit_err("out of memory");
-    return ptr;
-}
 
 #if defined(__TURBOC__) || defined(__IBMC__) || defined(__WATCOMC__) || (defined(_MSC_VER) && (_MSC_VER >= 1200))
 
@@ -208,7 +188,7 @@ int delareafromconfig(char *fileName, s_area *area) {
 	    if (stricmp(token, "echoarea")==0) {
 		token = strseparate(&cfgline, " \t");
     		if (stricmp(token, areaName)==0) {
-        	    fileName = safe_strdup(getCurConfName());
+        	    fileName = sstrdup(getCurConfName());
         	    pos = getCurConfPos();
         	    break;
     		}
@@ -240,7 +220,7 @@ int delareafromconfig(char *fileName, s_area *area) {
     fseek(f, 0, SEEK_END);
     endpos = ftell(f);
     if (endpos>lastpos) {
-	buff = (char*) safe_malloc((size_t) (endpos-lastpos));
+	buff = (char*) smalloc((size_t) (endpos-lastpos));
 	memset(buff, '\0', (size_t) (endpos-lastpos));
 	fseek(f, lastpos, SEEK_SET);
 	len = fread(buff, sizeof(char), (size_t) endpos-lastpos, f);
@@ -262,63 +242,6 @@ int delareafromconfig(char *fileName, s_area *area) {
     fclose(f);
     return 0;
 }
-#if 0
-// this function moved to smapi has name _createDirectoryTree
-int createDirectoryTree(const char *pathName) {
-
-    struct stat buf;
-    char *start, *slash;
-
-    char limiter=PATH_DELIM;
-
-    int i;
-
-    start = (char *) safe_malloc(strlen(pathName)+2);
-    strcpy(start, pathName);
-    i = strlen(start)-1;
-    if (start[i] != limiter) {
-	start[i+1] = limiter;
-	start[i+2] = '\0';
-    }
-    slash = start;
-
-#ifndef UNIX
-    // if there is a drivename, jump over it
-    if (slash[1] == ':') slash += 2;
-#endif
-
-    // jump over first limiter
-    slash++;
-
-    while ((slash = strchr(slash, limiter)) != NULL) {
-	*slash = '\0';
-
-	if (stat(start, &buf) != 0) {
-	    // this part of the path does not exist, create it
-	    if (mymkdir(start) != 0) {
-		fprintf(outlog, "Could not create directory %s", start);
-		nfree(start);
-		return 1;
-	    }
-/*    by AW 27.09.99    */
-#ifdef __WATCOMC__
-	} else if(!AW_S_ISDIR(buf.st_mode)) {
-#else
-	} else if(!S_ISDIR(buf.st_mode)) {
-#endif
-	    fprintf(outlog, "%s is a file not a directory", start);
-	    nfree(start);
-	    return 1;
-	}
-
-	*slash++ = limiter;
-    }
-
-    nfree(start);
-
-    return 0;
-}
-#endif
 
 int putMsgInArea(s_area *echo, XMSG  *xmsg, char *text)
 {
@@ -399,8 +322,7 @@ int makeRequestToLink (char *areatag, s_link *link) {
 		link->hisAka.node);
 
     if (link->msg == NULL) {
-	xmsgtxt = (s_xmsgtxt *) safe_malloc(sizeof(s_xmsgtxt));
-	memset(xmsgtxt, 0, sizeof(s_xmsgtxt));
+	xmsgtxt = (s_xmsgtxt *) scalloc( 1, sizeof(s_xmsgtxt));
 	link->msg = xmsgtxt;
 
 	xmsg = &(xmsgtxt->xmsg);
@@ -505,7 +427,7 @@ char *createDupeFileName(s_area *area) {
 void delete_area(s_area *area)
 {
     char *an = area->areaName;
-    int i;
+    unsigned int i;
     int rc;
 
     fprintf(outlog, "Kill area %s\n", an);
@@ -667,9 +589,9 @@ int main(int argc, char **argv) {
 
 			if (line) {
 			    nareas++;
-			    areas = (char **)safe_realloc ( areas, nareas*sizeof(char *));
+			    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
 			    areas[nareas-1] = line;
-			    needfree = (char *)safe_realloc ( needfree, nareas*sizeof(char));
+			    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
 			    needfree[nareas-1] = 1;
 			}
 
@@ -725,9 +647,9 @@ int main(int argc, char **argv) {
 	} else {
 	    // AreaName(s) specified by args
 	    nareas++;
-	    areas = (char **)realloc ( areas, nareas*sizeof(char *));
+	    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
 	    areas[nareas-1] = argv[i];
-	    needfree = (char *)safe_realloc ( needfree, nareas*sizeof(char));
+	    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
 	    needfree[nareas-1] = 0;
 	}
     }
@@ -735,9 +657,9 @@ int main(int argc, char **argv) {
     if (nareas == 0) {
 	if (killPass) {
 	    nareas++;
-	    areas = (char **)realloc ( areas, nareas*sizeof(char *));
+	    areas = (char **)srealloc ( areas, nareas*sizeof(char *));
 	    areas[nareas-1] = "*";
-	    needfree = (char *)safe_realloc ( needfree, nareas*sizeof(char));
+	    needfree = (char *)srealloc ( needfree, nareas*sizeof(char));
 	    needfree[nareas-1] = 0;
 	} else {
 	    if (!createDupe) {
@@ -749,7 +671,7 @@ int main(int argc, char **argv) {
 
     fprintf(outlog,"hptkill %s\n", version);
 
-    config = readConfig(NULL);
+    config = readConfig(getConfigFileName());
 
     if (!config) {
 	fprintf(outlog, "Could not read fido config\n");
@@ -763,7 +685,7 @@ int main(int argc, char **argv) {
     for ( j=0; j<nareas; j++) {
 	found = 0;
 
-	for (i=0, area = config->echoAreas; i < config->echoAreaCount; i++, area++) {
+	for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
 	    if (patimat(area->areaName, areas[j])==1){
 
 		delArea = 0;
@@ -773,7 +695,7 @@ int main(int argc, char **argv) {
 			if (area->downlinkCount <= 1) delArea++;
 			else if (checkPaused) {
 			    delArea = 2; // if two links w/o pause - leave untouched
-			    for (k=0; k < area->downlinkCount && delArea; k++) {
+			    for (k=0; (unsigned int)k < area->downlinkCount && delArea; k++) {
 				if (area->downlinks[k]->link->Pause == 0) delArea--;
 			    }
 			}
@@ -815,7 +737,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (killPass==0) {
-	    for (i=0, area=config->localAreas; i < config->localAreaCount; i++, area++) {
+	    for (i=0, area=config->localAreas; (unsigned int)i < config->localAreaCount; i++, area++) {
 		if (patimat(area->areaName, areas[j])==1){
 		    delete_area(area);
 		    killed++;
@@ -835,7 +757,7 @@ int main(int argc, char **argv) {
 
     if (killed) fprintf(outlog, "\n");
     // Put mail for links to netmail
-    for (i=0; i < config->linkCount; i++) {
+    for (i=0; (unsigned int)i < config->linkCount; i++) {
 	if (config->links[i].msg) {
 	    link = &(config->links[i]);
 	    if (link->hisAka.point)
@@ -871,7 +793,7 @@ int main(int argc, char **argv) {
     }
 
     if (createDupe) {
-	for (i=0, area = config->echoAreas; i < config->echoAreaCount; i++, area++) {
+	for (i=0, area = config->echoAreas; (unsigned int)i < config->echoAreaCount; i++, area++) {
 	    dupename = createDupeFileName(area);
 	    if (stat(dupename, &stbuf)!=0) {
 		fprintf (outlog, "Creating %s\n", dupename);
