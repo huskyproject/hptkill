@@ -17,7 +17,7 @@ RM	= del
 RMOPT	=
 endif
 
-CDEFS	= -D__NT__ -c -I../h
+CDEFS	= -D__NT__ -c -I../h -I../..
 CFLAGS	= -Wall
 COPT	= -O3
 
