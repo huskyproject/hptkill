@@ -2,6 +2,12 @@ hptkill 1.05
 ---------	
 
 ----- cvs ci ------
+Fri Jul 20 14:06:39 NOVST 2001
+max (patch from Serguei Revtov):
+* bugfix again: not all areas removed when specified with mask (and with -p)
+* indent/format source code
+
+----- cvs ci ------
 Sun Jun 10 15:44:50 NOVST 2001
 max (patch from Serguei Revtov):
 * -pp option
