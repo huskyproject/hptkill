@@ -1,3 +1,10 @@
+hptkill (1.10-20021004-1) unstable; urgency=low
+
+  * New cvs version
+  * Clean up debian/rules
+
+ -- Pavel Andreew <pavel@collage.etel.ru>  Fri,  4 Oct 2002 18:00:34 +0600
+
 hptkill (1.10-20020829-1) unstable; urgency=low
 
   * Write man page
