@@ -1,0 +1,28 @@
+# Legacy makefile for FreeBSD by Tema Zelikin 2:5097/31
+#
+# Use GNU version of make (gmake)
+#
+# For not use shared libraries uncomment 'STATIC' variable
+
+CC       = gcc
+CFLAGS   = -c -g -Wall -O2 -DUNIX -Ih -I..
+LFLAGS   = -s -L../fidoconf -L../smapi ../smapi/patmat.o ../smapi/setfsize.o
+
+OBJS    = hptkill.o
+SRC_DIR = src/
+#STATIC = -static
+
+all: $(OBJS) \
+        hptkill
+
+%.o: $(SRC_DIR)%.c
+        $(CC) $(CFLAGS) $(SRC_DIR)$*.c
+
+hptkill: $(OBJS)
+        $(CC) $(LFLAGS) $(STATIC) -o hptkill $(OBJS) -lsmapibsd -lfidoconfigbsd
+
+clean:
+        -rm -f *.o
+        -rm -f *~
+        -rm -f hptkill
+        -rm -f core
