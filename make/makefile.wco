@@ -6,6 +6,8 @@
 # Predefines: __WATCOMC__,
 # __OS2V2__ (-bt=os2v2)
 
+CC      = wcc386
+
 SRC_DIR	= ..\src
 
 PREFIX	= \fidonet
@@ -14,7 +16,7 @@ RANLIB	= WLINK
 RM	= del
 RMOPT	=
 
-CFLAGS  = -zq -wx -bt=os2v2 -j -i..\h -i..\.. -oneatx -5 -DOS2
+CFLAGS  = -zq -wx -bt=os2v2 -j -i..\h -i..\.. -oneatx -5 -DOS2 -D__OS2__
 LFLAGS  = system os2v2 FILE
 
 LIBS	= Library ..\..\smapi\smapiwco.lib, ..\..\fidoconf\fconfwco.lib
@@ -44,7 +46,7 @@ $(OBJS): $(SRC_DIR)\*.c
 
 programs: $(OBJS)
   @echo linking $(TARGET)
-  $(RANLIB) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
+  $(RANLIB) $(LFLAGS) $(OBJS) $(LIBS) $(EXENAMEFLAG) $(TARGET)
 
 man:
 
