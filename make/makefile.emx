@@ -15,7 +15,7 @@ CFLAGS	= -D__OS2__ -I../h -I../.. -c
 COPT	= -O2
 LFLAGS	= -Zcrtdll
 
-LIBS	= ../../smapi/smapiemx.a ../../smapi/patmat.o ../../fidoconf/fconfemx.a
+LIBS	= ../../smapi/smapiemx.a ../../fidoconf/fconfemx.a ../../smapi/patmat.o ../../smapi/genmsgid.o
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
