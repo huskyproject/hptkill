@@ -1,3 +1,7 @@
+2003-05-29 Thursday 20:25  d_sergienko
+
+	* src/hptkill.c (hptkill-1_12-stable.2): fix compilation on BeOS
+
 2003-05-21 Wednesday 08:56  sfpavel
 
 	* debian/control (hptkill-1_12-stable.3): Change debian
