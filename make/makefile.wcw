@@ -1,24 +1,42 @@
+# $Id$
+#
+# Makefile for Building hptkill with Watcom C++ for Windows.
+# No support for Husky build environment.
+#
+# Predefines: __WATCOMC__,
+# __NT__ (-bt=nt)
+
+SRC_DIR	= ..\src
+
 CC      = wcc386
 LINK    = WLINK
-SRC     = ..\src
+RM	= del
 
 CFLAGS  = -zq -wx -bt=nt -i..\.. -oneatx -5
-LFLAGS  =
+LFLAGS  = system nt FILE
 
-OBJS = hptkill.obj
+LIBS	= Library ..\..\smapi\smapiwcw.lib, ..\..\fidoconf\fconfwcw.lib
 
-all: $(OBJS) hptkill.exe
+EXENAMEFLAG = NAME
 
-$(OBJS): $(SRC)\*.c
+OBJ	= .obj
+EXE	= .exe
+
+OBJS	= hptkill$(OBJ)
+TARGET	= hptkill$(EXE)
+
+all: $(OBJS) $(TARGET)
+
+$(OBJS): $(SRC_DIR)\*.c
   @echo compiling $*.c
-  $(CC) $(CFLAGS) $(SRC)\$*.c
+  $(CC) $(CFLAGS) $(SRC_DIR)\$*.c
 
-hptkill.exe: $(OBJS)
-  @echo linking hptkill
-  $(LINK) $(LFLAGS) FILE hptkill.obj Library ..\..\smapi\smapiwcw, ..\..\fidoconf\fconfwcw.lib NAME hptkill.exe
+$(TARGET): $(OBJS)
+  @echo linking $(TARGET)
+  $(LINK) $(LFLAGS) $(OBJS) $(LIBS) $(EXENAMEFLAG) $(TARGET)
 
 clean:
-	-DEL *.OBJ
-	-DEL *.err
-	-DEL hptkill.exe
+	-$(RM) *$(OBJ) *.err
 
+distclean: clean
+	-$(RM) $(TARGET)

@@ -3,28 +3,35 @@
 # Legacy makefile for Cygwin/mingw
 # Do not support husky build enviroment
 
-SRCDIR= ../src/
+SRC_DIR	= ../src/
 
-CC    =gcc
-CFLAGS=-D__NT__ -DWIN32 -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
-COPT  =-O2
-LFLAGS=-L../../smapi -L../../fidoconf -mno-cygwin 
+CC	= gcc
+RM	= rm -f
 
+CFLAGS	= -D__NT__ -DWIN32 -I../.. -Wall -pedantic -c -Wno-char-subscripts -mno-cygwin
+COPT	= -O2
+LFLAGS	= -L../../smapi -L../../fidoconf -mno-cygwin 
 
-OBJS =hptkill.o
-LIBS =-lfidoconfigcyg -lsmapicyg
+LIBS	= -lfidoconfigcyg -lsmapicyg
 
-all: hptkill.exe
+EXENAMEFLAG = -o
 
-%.o: $(SRCDIR)%.c
-	$(CC) $(COPT) $(CFLAGS) $(SRCDIR)$*.c
+OBJ	= .o
+EXE	= .exe
 
-hptkill.exe: $(OBJS)
-	$(CC) $(LFLAGS) -o hptkill.exe $(OBJS) $(LIBS)
+OBJS	= hptkill$(OBJ)
+TARGET	= hptkill$(EXE)
+
+all: $(TARGET)
+
+%$(OBJ): $(SRC_DIR)%.c
+	$(CC) $(COPT) $(CFLAGS) $(SRC_DIR)$*.c
+
+$(TARGET): $(OBJS)
+	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
 
 clean:
-	-rm -f *.o
+	-$(RM) *$(OBJ)
 
 distclean: clean
-	-rm hptkill.exe
-	-rm hptkill.?.gz
+	-$(RM) $(TARGET)

@@ -1,6 +1,7 @@
+# $Id$
+#
 # Legacy makefile for FreeBSD, NetBSD & OpenBSD by Stas Degteff 2:5080/102
 # Tested on FreeBSD 4.1-RELEASE
-#
 # Use GNU version of make (gmake)
 #
 # For compile static binary (w/out shared libraries) uncomment 'STATIC' macro
@@ -8,28 +9,32 @@
 
 #STATIC = -static
 
-TARGET= hptkill
-OBJS=   hptkill.o
+SRC_DIR	= ../src/
 
-SRC_DIR= ../src/
+PREFIX	= /usr/local
 
-PREFIX= /usr/local
+CC	= gcc
+RM	= rm -f
 
-CC=     gcc
-CFLAGS= -Wall
-CDEFS=  -DUNIX
-COPT=   -O3 -c -g
-INCDIRS= -I../..
+CFLAGS	= -Wall -I../..
+CDEFS	= -DUNIX
+COPT	= -O3 -c -g
+LFLAGS	= -s -L../../fidoconf -L../../smapi $(STATIC)
 
-LIBS  = -lsmapibsd -lfidoconfigbsd
-LOPTS = -L../../fidoconf -L../../smapi
-LFLAGS= -s $(STATIC)
+LIBS	= -lsmapibsd -lfidoconfigbsd
 
-BINDIR= $(PREFIX)/bin
-IBOPT=  -m 555 -c
-DIROPT= -d -m 755
-INSTALL= install
-RM= rm -f
+EXENAMEFLAG = -o
+
+OBJ	= .o
+EXE	=
+
+OBJS	= hptkill$(OBJ)
+TARGET	= hptkill$(EXE)
+
+BINDIR	= $(PREFIX)/bin
+IBOPT	= -m 555 -c
+DIROPT	= -d -m 755
+INSTALL	= install
 
 # FreeBSD/i386 addition
 #
@@ -37,23 +42,21 @@ ifeq ( ${MACHINE_ARCH} , "i386" )
    CFLAGS+= -fomit-frame-pointer -fstrength-reduce -m486
 endif
 
+all: $(OBJS) $(TARGET)
 
-all: $(OBJS) \
-	program
+%(OBJ): $(SRC_DIR)%.c
+	$(CC) $(COPT) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
 
-%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(CDEFS) $(COPT) $(INCDIRS) $(SRC_DIR)$*.c
-
-program: $(OBJS)
-	$(CC) $(LFLAGS) -o $(TARGET) $(LOPTS) $(OBJS) $(LIBS)
+$(TARGET): $(OBJS)
+	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
 
 clean:
-	-$(RM) *.o
+	-$(RM) *$(OBJ)
 	-$(RM) *.core
 
 distclean: clean
-	-rm -f $(TARGET)
+	-$(RM) $(TARGET)
 
-install: program
+install: $(TARGET)
 	$(INSTALL) $(IBOPT) $(TARGET) $(BINDIR)
 

@@ -1,31 +1,46 @@
+# $Id$
+#
+# Makefile for Building hptkill with cross-compiler Mingw32
+# No support for the Husky build environment.
 
-CC=gcc
-RM=del
+SRC_DIR	= ../src/
 
-CDEFS=-D__NT__ -c -I../..
-CFLAGS=-Wall
-COPT=-O3
+CC	= gcc
 
-LFLAGS=-L../../smapi -L../../fidoconf
-LIBS=-lfidoconfigmgw -lsmapimgw -luser32
-SRC_DIR=../src/
+ifeq ($(TERM),msys)
+RM	= rm
+else
+RM	= del
+endif
+
+CDEFS	= -D__NT__ -c -I../..
+CFLAGS	= -Wall
+COPT	= -O3
+
+LFLAGS	= -L../../smapi -L../../fidoconf
+LIBS	= -lfidoconfigmgw -lsmapimgw -luser32
+
+EXENAMEFLAG = -o
+
+OBJ	= .o
+EXE	= .exe
 
 default: all
 
-TARGET=hptkill.exe
+OBJS	= hptkill$(OBJ)
+TARGET	= hptkill$(EXE)
 
-OBJS=hptkill.o
 
 all: $(TARGET)
 
-%.o: $(SRC_DIR)%.c
+%$(OBJ): $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(CDEFS) $(COPT) $(SRC_DIR)$*.c
 
 $(TARGET): $(OBJS)
-	$(CC) $(LFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
 
 clean:
-	-$(RM) *.o
+	-$(RM) *$(OBJ)
 
-distclean:
+distclean: clean
 	-$(RM) $(TARGET)

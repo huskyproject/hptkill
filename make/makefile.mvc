@@ -1,21 +1,31 @@
-# Microsoft Visual C++ Makefile
+# $Id$
+#
+# Microsoft Visual C++ Makefile for build hptkill static library
 
-CC=     cl
-CFLAGS= -nologo -Zp1 -I..\..
-CDEFS=  -D__NT__ -DNT -DWINNT -D_CONSOLE
-COPT=   -O2
-TLIB=   lib -nologo
+CC	= cl
+RM	= del
 
-SMAPIL=	..\..\smapi\smapimvc.lib
-FCONFL=	..\..\fidoconf\fconfmvc.lib
+CFLAGS	= -nologo -Zp1 -I..\..
+CDEFS	= -D__NT__ -D_CONSOLE
+COPT	= -O2
+TLIB	= lib -nologo
 
-all: hptkill.exe
+LIBS	= ..\..\smapi\smapimvc.lib ..\..\fidoconf\fconfmvc.lib
 
-hptkill.exe:
-        $(CC) $(CFLAGS) $(CDEFS) $(COPT) -Fe$@ ..\src\hptkill.c $(FCONFL) $(SMAPIL)
+EXENAMEFLAG = -Fe
+
+OBJ	= .obj
+EXE	= .exe
+
+TARGET	= hptkill$(EXE)
+
+all: $(TARGET)
+
+$(TARGET):
+        $(CC) $(CFLAGS) $(CDEFS) $(COPT) $(EXENAMEFLAG)$@ ..\src\hptkill.c $(LIBS)
 
 clean:
-	-del *.obj
+	-$(RM) *$(OBJ)
 
 distclean: clean
-	-del *.exe
+	-$(RM) $(TARGET)

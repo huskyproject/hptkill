@@ -1,24 +1,41 @@
-CC      = wcc386
+# $Id$
+#
+# Makefile for Building hptkill with Watcom C++ for OS/2
+# No support for Husky build environment.
+#
+# Predefines: __WATCOMC__,
+# __OS2V2__ (-bt=os2v2)
+
+SRC_DIR	= ..\src
+
 LINK    = WLINK
-SRC     = ..\src
+RM	= del
 
 CFLAGS  = -zq -wx -bt=os2v2 -j -i..\.. -oneatx -5 -DOS2
-LFLAGS  = system os2v2
+LFLAGS  = system os2v2 FILE
 
-OBJS = hptkill.obj
+LIBS	= Library ..\..\smapi\smapiwco.lib, ..\..\fidoconf\fconfwco.lib
 
-all: $(OBJS) hptkill.exe
+EXENAMEFLAG = NAME
 
-$(OBJS): $(SRC)\*.c
+OBJ	= .obj
+EXE	= .exe
+
+OBJS	= hptkill$(OBJ)
+TARGET	= hptkill$(EXE)
+
+all: $(OBJS) $(TARGET)
+
+$(OBJS): $(SRC_DIR)\*.c
   @echo compiling $*.c
-  $(CC) $(CFLAGS) $(SRC)\$*.c
+  $(CC) $(CFLAGS) $(SRC_DIR)\$*.c
 
-hptkill.exe: $(OBJS)
-  @echo linking hptkill
-  $(LINK) $(LFLAGS) FILE hptkill.obj Library ..\..\smapi\smapiwco.lib, ..\..\fidoconf\fconfwco.lib NAME hptkill.exe
+$(TARGET): $(OBJS)
+  @echo linking $(TARGET)
+  $(LINK) $(LFLAGS) $(OBJS) $(LIBS) $(EXENAMEFLAG) $(TARGET)
 
 clean:
-	-DEL *.OBJ
-	-DEL *.err
-	-DEL hptkill.exe
+	-$(RM) *$(OBJ) *.err
 
+distclean: clean
+	-$(RM) $(TARGET)

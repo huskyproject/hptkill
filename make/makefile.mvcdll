@@ -1,21 +1,31 @@
-# Microsoft Visual C++ Makefile
+# $Id$
+#
+# Microsoft Visual C++ Makefile for build hptkill DLL
 
-CC=     cl
-CFLAGS= -nologo -MD -Zp1 -I..\..
-CDEFS=  -D__NT__ -DNT -DWINNT -D_CONSOLE -D_MAKE_DLL
-COPT=   -O2
-TLIB=   lib -nologo
+CC	= cl
+RM	= del
+CFLAGS	= -nologo -MD -Zp1 -I..\..
+CDEFS	= -D__NT__ -D_CONSOLE -D_MAKE_DLL
+COPT	= -O2
+TLIB	= lib -nologo
 
-SMAPIL=	..\..\smapi\smapimvc.lib msvcrt.lib Kernel32.lib /link /opt:nowin98
-FCONFL=	..\..\fidoconf\fconfmvc.lib
+LIBS	= ..\..\smapi\smapimvc.lib ..\..\fidoconf\fconfmvc.lib \
+	  msvcrt.lib Kernel32.lib /link /opt:nowin98
 
-all: hptkill.exe
+EXENAMEFLAG = -Fe
 
-hptkill.exe:
-        $(CC) $(CFLAGS) $(CDEFS) $(COPT) -Fe$@ ..\src\hptkill.c $(FCONFL) $(SMAPIL)
+OBJ	= .obj
+EXE	= .exe
+
+TARGET	= hptkill$(EXE)
+
+all: $(TARGET)
+
+$(TARGET):
+        $(CC) $(CFLAGS) $(CDEFS) $(COPT) $(EXENAMEFLAG)$@ ..\src\hptkill.c $(LIBS)
 
 clean:
-	-del *.obj
+	-$(RM) *$(OBJ)
 
 distclean: clean
-	-del *.exe
+	-$(RM) $(TARGET)
