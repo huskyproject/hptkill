@@ -11,11 +11,12 @@ CC	= gcc
 RM	= del
 RMOPT	=
 
-CFLAGS	= -D__OS2__ -I../h -I../.. -c
+CFLAGS	= -D__OS2__ -c
+CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
 COPT	= -O2
 LFLAGS	= -Zcrtdll
 
-LIBS	= ../../smapi/smapiemx.a ../../smapi/patmat.o ../../fidoconf/fconfemx.a
+LIBS	= ../../fidoconf/fconfemx.a ../../smapi/make/smapiemx.a ../../huskylib/make/huskyemx.a
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
@@ -37,7 +38,7 @@ default: all
 all: $(OBJS) programs
 
 %$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(COPT) $(CFLAGS) $(SRC_DIR)/$*.c
+	$(CC) $(COPT) $(CFLAGS) $(CINCL) $(SRC_DIR)/$*.c
 
 programs: $(OBJS)
 	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)

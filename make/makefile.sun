@@ -11,9 +11,10 @@ CC	= gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -c -g -O2 -DUNIX -I../h -I../..
-LFLAGS	= -s -L../../fidoconf -L../../smapi
-LIBS	= -lfidoconfigsun -lsmapisun
+CFLAGS	= -c -g -O2 -DUNIX
+CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
+LFLAGS	= -s -L../../fidoconf -L../../smapi/make -L../../huskylib/make
+LIBS	= -lfidoconfigsun -lsmapisun -lhuskysun
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
@@ -35,7 +36,7 @@ all: $(OBJS) programs
 	
 
 %$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $(SRC_DIR)/$*.c
+	$(CC) $(CFLAGS) $(CINCL) $(SRC_DIR)/$*.c
 
 programs: $(OBJS)
 	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)

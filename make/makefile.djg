@@ -11,11 +11,12 @@ CC	= gcc
 RM	= del
 RMOPT	=
 
-CFLAGS	= -I../h -I../.. -Wall -c -mcpu=i486
-LFLAGS	= -s -L../../fidoconf -L../../smapi
+CFLAGS	= -Wall -c -mcpu=i486
+CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
+LFLAGS	= -s -L../../fidoconf -L../../smapi/make -L../../huskylib/make
 COPT	= -O2
 
-LIBS	= ../../smapi/smapidjg.a ../../smapi/patmat.o ../../fidoconf/fconfdjg.a
+LIBS	= -lfconfdjg -lsmapidjg -lhuskydjg
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
@@ -37,7 +38,7 @@ default: all
 all: $(OBJS) programs
 
 %$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(COPT) $(CFLAGS) $(SRC_DIR)/$*.c
+	$(CC) $(COPT) $(CFLAGS) $(CINCL) $(SRC_DIR)/$*.c
 
 programs: $(OBJS)
 	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)

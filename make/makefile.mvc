@@ -10,12 +10,14 @@ CC	= cl
 RM	= del
 RMOPT	=
 
-CFLAGS	= -nologo -Zp1 -I..\h -I..\..
+CFLAGS	= -nologo -Zp1
+CINCL	= -I..\h -I..\..\fidoconf -I..\..\smapi -I..\..\huskylib
 CDEFS	= -D__NT__ -D_CONSOLE
 COPT	= -O2
 TLIB	= lib -nologo
 
-LIBS	= ..\..\smapi\smapimvc.lib ..\..\fidoconf\fconfmvc.lib
+LIBS	= ..\..\smapi\make\smapimvc.lib ..\..\fidoconf\fconfmvc.lib \
+	  ..\..\huskylib\make\huskymvc.lib
 
 EXENAME	= hptkill
 EXENAMEFLAG = -Fe
@@ -36,7 +38,8 @@ default: all
 all: programs
 
 programs: 
-        $(CC) $(CFLAGS) $(CDEFS) $(COPT) $(EXENAMEFLAG)$(TARGET) $(SRC_DIR)\$(EXENAME).c $(LIBS)
+        $(CC) $(CFLAGS) $(CINCL) $(CDEFS) $(COPT) \
+	$(EXENAMEFLAG)$(TARGET) $(SRC_DIR)\$(EXENAME).c $(LIBS)
 
 man:
 

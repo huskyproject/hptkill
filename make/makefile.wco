@@ -14,10 +14,11 @@ RANLIB	= WLINK
 RM	= del
 RMOPT	=
 
-CFLAGS  = -zq -wx -bt=os2v2 -j -i..\h -i..\.. -oneatx -5 -DOS2
+CFLAGS  = -zq -wx -bt=os2v2 -j -oneatx -5 -DOS2
+CINCL	= -i../h;../../fidocon;../../smapi;../../huskylib
 LFLAGS  = system os2v2 FILE
 
-LIBS	= Library ..\..\smapi\smapiwco.lib, ..\..\fidoconf\fconfwco.lib
+LIBS	= Library ..\..\huskylib\make\huskywco.lib, ..\..\smapi\make\smapiwco.lib, ..\..\fidoconf\fconfwco.lib
 
 EXENAME	= hptkill
 EXENAMEFLAG = NAME
@@ -40,7 +41,7 @@ all: $(OBJS) programs
 
 $(OBJS): $(SRC_DIR)\*.c
   @echo compiling $*.c
-  $(CC) $(CFLAGS) $(SRC_DIR)\$*.c
+  $(CC) $(CFLAGS) $(CINCL) $(SRC_DIR)\$*.c
 
 programs: $(OBJS)
   @echo linking $(TARGET)

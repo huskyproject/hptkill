@@ -12,12 +12,13 @@ CC	= gcc
 RM	= rm
 RMOPT	= -f
 
-CFLAGS	= -Wall -I../h -I../..
+CFLAGS	= -Wall
+CINCL	= -I../h -I../../fidoconf -I../../smapi -I../../huskylib
 CDEFS	= -DUNIX
 COPT	= -O3 -c -g
-LFLAGS	= -s -L../../fidoconf -L../../smapi
+LFLAGS	= -s -L../../fidoconf -L../../smapi/make -L../../huskylib/make
 
-LIBS	= -lfidoconfigbsd -lsmapibsd   
+LIBS	= -lfidoconfigbsd -lsmapibsd -lhuskybsd
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
@@ -45,7 +46,7 @@ default: all
 all: $(OBJS) programs
 
 %$(OBJ): $(SRC_DIR)/%.c
-	$(CC) $(COPT) $(CFLAGS) $(CDEFS) $(SRC_DIR)/$*.c
+	$(CC) $(COPT) $(CFLAGS) $(CINCL) $(CDEFS) $(SRC_DIR)/$*.c
 
 programs: $(OBJS)
 	$(CC) $(LFLAGS) $(EXENAMEFLAG) $(TARGET) $(OBJS) $(LIBS)
