@@ -1,3 +1,17 @@
+2002-08-30 Friday 09:47  sfpavel
+
+	* Makefile (1.4), hptkill.1 (1.1), debian/changelog (1.4),
+	debian/dirs (1.2), debian/rules (1.3): New debian package, write
+	man page
+
+2002-08-30 Friday 09:27  stas_degteff
+
+	* makefile.mgw (1.2): Fix MINGW compilation
+
+2002-08-30 Friday 09:02  mche
+
+	* makefile.mgw (1.1): no message
+
 2002-08-26 Monday 08:30  sfpavel
 
 	* debian/: changelog (1.3), copyright (1.3): Update http location
