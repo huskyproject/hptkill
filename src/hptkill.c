@@ -79,7 +79,7 @@
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.10.2-stable";
+char *version = "1.10.2-release";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
