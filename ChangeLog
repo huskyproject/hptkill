@@ -1,7 +1,17 @@
+2002-12-30 Monday 14:55  stas_degteff
+
+	* src/hptkill.c (hptkill-1_10-stable.5): Set version to
+	1.10.2-stable
+
+2002-12-30 Monday 14:54  stas_degteff
+
+	* src/hptkill.c (tags: hptkill-1_10_2-release)
+	(hptkill-1_10-stable.4): 1.10.2-release
+
 2002-12-27 Friday 13:06  sfpavel
 
-	* debian/changelog, src/hptkill.c (hptkill-1_10-stable.[3,3])
-	(utags: hptkill-1_10_2-release): hptkill 1.10.2 release
+	* debian/changelog (tags: hptkill-1_10_2-release), src/hptkill.c
+	(hptkill-1_10-stable.[3,3]): hptkill 1.10.2 release
 
 2002-12-26 Thursday 12:40  stas_degteff
 
