@@ -13,7 +13,7 @@ RMOPT	= -f
 
 CFLAGS	= -c -g -O2 -DUNIX -I../..
 LFLAGS	= -s -L../../fidoconf -L../../smapi
-LIBS	= -lsmapisun -lfidoconfigsun
+LIBS	= -lfidoconfigsun -lsmapisun
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
