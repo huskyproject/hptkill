@@ -3,7 +3,7 @@
 #
 # Use GNU version of make (gmake)
 #
-# For not use shared libraries uncomment 'SHARED' variable
+# For compile static binary (w/out shared libraries) uncomment 'STATIC' macro
 #
 
 #STATIC = -static
@@ -22,7 +22,8 @@ CDEFS=  -DUNIX
 COPT=   -O3 -c -g
 INCDIRS= -I./h -I..
 
-LIBS=   -L../fidoconf -L../smapi -lsmapi -lfidoconfig
+LIBS  = -lsmapibsd -lfidoconfigbsd
+LOPTS = -L../fidoconf -L../smapi
 LFLAGS= -s $(STATIC)
 
 BINDIR= $(PREFIX)/bin
@@ -45,7 +46,7 @@ all: $(OBJS) \
 	$(CC) $(CFLAGS) $(CDEFS) $(COPT) $(INCDIRS) $(SRC_DIR)$*.c
 
 program: $(OBJS)
-	$(CC) $(LFLAGS) $(LIBS) -o $(TARGET) $(OBJS)
+	$(CC) $(LFLAGS) -o $(TARGET) $(LOPTS) $(OBJS) $(LIBS)
 
 clean:
 	-$(RM) *.o
