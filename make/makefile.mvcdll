@@ -1,40 +1,53 @@
 # $Id$
 #
-# Microsoft Visual C++ Makefile for build hptkill DLL
+# Microsoft Visual C++ Makefile for build dinamic program(s)
+# No support for the Husky build environment.
+#
+# Tested on MS Visual C 6.0
+#
+include makefile.inc
 
-SRC_DIR	= ..\src
-
-PREFIX	= \fidonet
+## programs ##
 
 CC	= cl
+AR	= lib
+LINK	= link
+RANLIB	=
 RM	= del
-RMOPT	=
 
-CFLAGS	= -nologo -MD -Zp1
-CINCL	= -I..\h -I..\..\fidoconf -I..\..\smapi -I..\..\huskylib
-CDEFS	= -D__NT__ -D_CONSOLE -D_MAKE_DLL
-COPT	= -O2
-TLIB	= lib -nologo
+## file suffixes ##
+_C	= .c
+_OBJ	= .obj
+_LIB	= .lib
+_EXE	= .exe
+_DLL	= .dll
+_EXP	= .exp
+_ILK	= .ilk
+_PDB	= .pdb
 
+## program options ##
+CFLAGS=-nologo -MD -Zp1 -Ob2 -c
+CINCL= -I$(H_DIR) -I..\..\fidoconf -I..\..\smapi -I..\..\huskylib
+LFLAGS=
+CDEFS =-D__NT__ -D_CONSOLE -D_MAKE_DLL
+EXENAMEFLAG=-Fe
+
+# List of HUSKY libraries required to build binary file(s)
 LIBS	= ..\..\huskylib\make\huskymvc.lib \
-	  ..\..\smapi\make\smapimvc.lib ..\..\fidoconf\fconfmvc.lib \
-	  msvcrt.lib Kernel32.lib /link /opt:nowin98
-
-EXENAME	= hptkill
-EXENAMEFLAG = -Fe
-
-OBJ	= .obj
-EXE	= .exe
-
-TARGET	= $(EXENAME)$(EXE)
+	  ..\..\smapi\make\smapimvc.lib ..\..\fidoconf\make\fconfmvc.lib \
+	  USER32.LIB msvcrt.lib Kernel32.lib \
+	  /link /nodefaultlib /opt:nowin98
 
 default: all
-
+programs: $(PROGRAMS)
 all: programs
 
-programs:
-        $(CC) $(CFLAGS) $(CINCL) $(CDEFS) $(COPT) \
-	$(EXENAMEFLAG)$(TARGET) $(SRC_DIR)\$(EXENAME).c $(LIBS)
+{$(_SRC_DIR)}.c$(_OBJ):
+	@$(CC) $(CFLAGS) $(CINCL) $(CDEFS) $<
+
+
+$(PROGRAMS): $(OBJS)
+	$(CC) $(LFLAGS) $(EXENAMEFLAG)$@ $** $(LIBS)
 
 man:
 
