@@ -1,3 +1,12 @@
+2003-09-18 Thursday 10:37  sfpavel
+
+	* Makefile (hptkill-1_12-stable.1): Fix static building
+
+2003-09-18 Thursday 06:26  sfpavel
+
+	* debian/changelog (hptkill-1_12-stable.6): New stable version:
+	1.12-RC2
+
 2003-05-29 Thursday 20:25  d_sergienko
 
 	* src/hptkill.c (hptkill-1_12-stable.2): fix compilation on BeOS
