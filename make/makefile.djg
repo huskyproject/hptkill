@@ -12,10 +12,10 @@ RM	= del
 RMOPT	=
 
 CFLAGS	= -I../h -I../.. -Wall -c -mcpu=i486
-LFLAGS	= -s -L../../fidoconf -L../../smapi
+LFLAGS	= -s
 COPT	= -O2
 
-LIBS	= ../../smapi/smapidjg.a ../../smapi/patmat.o ../../fidoconf/fconfdjg.a
+LIBS	= ../../smapi/smapidjg.a ../../fidoconf/fconfdjg.a ../../smapi/patmat.o ../../smapi/genmsgid.o
 
 EXENAME	= hptkill
 EXENAMEFLAG = -o
