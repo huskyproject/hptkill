@@ -85,7 +85,7 @@ extern long curconfpos;
 s_fidoconfig *config;
 
 FILE *outlog;
-char *version = "1.05";
+char *version = "1.06";
 
 typedef enum senduns { eNobody, eFirstLink, eNodes, eAll} e_senduns;
 
@@ -115,6 +115,7 @@ void usage(void) {
    fprintf(outlog, "   -f -    - read areas list from stdin in addition to args\n");
    fprintf(outlog, "   -k - set Kill/Sent attribute to messages for links\n");
    fprintf(outlog, "   -p - find & kill passthrough echoareas with <=1 links\n");
+   fprintf(outlog, "   -pp - same as -p including paused links\n");
    fprintf(outlog, "\nDefault settings:\n");
    fprintf(outlog, " -  send unsubscribe message to subcribed nodes only\n");
    fprintf(outlog, " -  leave config unchanged\n");
@@ -606,7 +607,7 @@ void delete_area(s_area *area)
 
 int main(int argc, char **argv) {
 
-   int i, j;
+   int i, j, k;
    struct _minf m;
    char **areas=NULL;
    char *needfree=NULL;
@@ -617,6 +618,10 @@ int main(int argc, char **argv) {
    s_xmsgtxt *xmsgtxt;
    s_link *link;
    int killed=0;
+   int checkPaused=0;
+   int delArea;
+   s_area *area;
+   
 
    outlog=stderr;
 
@@ -691,8 +696,9 @@ int main(int argc, char **argv) {
 
              case 'p': /* kill passthrough areas with 1 link*/
              case 'P':
-				 killPass++;
-				 break;
+                killPass++;
+                if (argv[i][2]=='p' || argv[i][2]=='P') checkPaused++;
+                break;
 
              default:
                 usage();
@@ -737,23 +743,36 @@ int main(int argc, char **argv) {
    for ( j=0; j<nareas; j++) {
       found = 0;
 
-      for (i=0; i < config->echoAreaCount; i++) {
-		  if (patimat(config->echoAreas[i].areaName, areas[j])==1){
-			  if (killPass==0 || (
-				  (config->echoAreas[i].msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH &&
-				  config->echoAreas[i].downlinkCount <= 1 )) {
-				  delete_area(&(config->echoAreas[i]));
-				  killed++;
-				  found++;
-				  if (delFromConfig) i--; // Area is removed from areas array!
+      for (i=0, area = config->echoAreas; i < config->echoAreaCount; i++, area++) {
+		  if (patimat(area->areaName, areas[j])==1){
+
+			  delArea = 0;
+			  if (killPass==0 ) delArea++;
+			  else if ((area->msgbType & MSGTYPE_PASSTHROUGH) == MSGTYPE_PASSTHROUGH) {
+			     if (area->downlinkCount <= 1) delArea++;
+			     else if (checkPaused) {
+			 	delArea = 2; // if two links w/o pause - leave untouched
+				for (k=0; k < area->downlinkCount && delArea; k++) {
+				   if (area->downlinks[k]->link->Pause == 0) delArea--;
+				   //printf("debug link: %s\n",area->downlinks[k]->link->name);
+				   //printf("debug pause: %u\n",area->downlinks[k]->link->Pause);
+				}
+				//printf("debug delArea: %u\n",delArea);
+			     }
+			  }
+			  if (delArea) {
+			     delete_area(area);
+			     killed++;
+			     found++;
+			     if (delFromConfig) i--; // Area is removed from areas array!
 			  }
 		  }
       }
 
 	  if (killPass==0) {
-		  for (i=0; i < config->localAreaCount; i++) {
-			  if (patimat(config->localAreas[i].areaName, areas[j])==1){
-				  delete_area(&(config->localAreas[i]));
+		  for (i=0, area=config->localAreas; i < config->localAreaCount; i++, area++) {
+			  if (patimat(area->areaName, areas[j])==1){
+				  delete_area(area);
 				  killed++;
 				  found++;
 				  if (delFromConfig) i--; // Area is removed from areas array!

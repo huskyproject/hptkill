@@ -2,6 +2,11 @@ hptkill 1.05
 ---------	
 
 ----- cvs ci ------
+Sun Jun 10 15:44:50 NOVST 2001
+max (patch from Serguei Revtov):
+* -pp option
+
+----- cvs ci ------
 Mon May 21 16:41:21 NOVST 2001
 max (patch from Serguei Revtov):
 * bugfix: not all areas removed when specified with mask (and with -p)
