@@ -4,6 +4,7 @@ Changes after HPTKILL 1.10
 1. MAJOR feature improvements:
    - update queryfile when unlink from uplinks;
    - Implement husky-standart version string generation.
+   - "ECHOBONE.NA" echolist format is supported (usage: hptkill -f ECHOKILL.NA)
 
 2. CONFIG changes:
 

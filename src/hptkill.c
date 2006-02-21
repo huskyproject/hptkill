@@ -498,6 +498,14 @@ int main(int argc, char **argv) {
                     line = readLine(f);
 
                     if (line) {
+                        char *spacep=strchr(line+1,' ');
+                        if(spacep) { /* Format FILEBONE.NA: "areatag comment" */
+                          *spacep=0; /* First char should be alphanumberic    */
+                          spacep=strdup(line);
+                          free(line);
+                          line=spacep;
+                        }
+                        if( line[0]==0 ) continue; /* skip empty line */
                         nareas++;
                         areas = (char **)srealloc ( areas, nareas*sizeof(char *));
                         areas[nareas-1] = line;
