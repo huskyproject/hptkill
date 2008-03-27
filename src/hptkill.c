@@ -102,7 +102,8 @@ void usage(void) {
     "\t  -o num - kill passthrough area with dupebase older 'num' days\n"
     "\t  -O num - same as -o but kill areas without dupebases\n"
     "\t  -l file - with -o/-O write to file list of areas without dupebase\n"
-    "\t  -C - create empty dupebase if it doesn't exist\n"
+    "\t  -C - create empty dupebase if it doesn't exist\n");
+    printf(
     "\nDefault settings:\n"
     " -  send unsubscribe message to subcribed nodes only\n"
     " -  leave config unchanged\n"
