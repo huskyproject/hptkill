@@ -653,7 +653,7 @@ int main(int argc, char **argv) {
                     else if (checkPaused) {
                         delArea = 2; /* if two links w/o pause - leave untouched */
                         for (k=0; k < area->downlinkCount && delArea; k++) {
-                            if (area->downlinks[k]->link->Pause == 0) delArea--;
+                            if ((area->downlinks[k]->link->Pause & ECHOAREA)!= ECHOAREA) delArea--;
                         }
                     }
                 }
