@@ -10,7 +10,7 @@ CC	= cl
 RM	= del
 RMOPT	=
 
-CFLAGS	= -nologo -MD -Zp1 -I..\h -I..\..
+CFLAGS	= -nologo -MD -I..\h -I..\..
 CDEFS	= -D__NT__ -D_CONSOLE -D_MAKE_DLL
 COPT	= -O2
 TLIB	= lib -nologo
