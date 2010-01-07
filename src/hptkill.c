@@ -85,24 +85,27 @@ void usage(void) {
 
     printf(
     "Usage: hptkill [options] [areaNameMask ...]\n"
-    "Options:  -c config-file - specify alternate config file\n"
-    "\t  -1 - send unsubscribe message to first link only\n"
-    "\t  -n - don't send unsubscribe message\n"
-    "\t  -a - send unsubscribe message all subscribed links\n"
-    "\t  -d - delete area from config\n"
+    "Options:"
+    "\t  -c config-file - specify alternate config file\n"
+    "\t  -1 - send unsubscribe message only to first link\n"
+    "\t  -n - don't send unsubscribe messages\n"
+    "\t  -a - send unsubscribe messages to all subscribed links\n"
+    "\t  -d - delete area from config file\n"
     "\t  -s - save (don't erase) message & dupe bases\n"
     "\t  -f file - read areas list from file in addition to args\n"
     "\t  -f -    - read areas list from stdin in addition to args\n"
     "\t  -p - find & kill passthrough echoareas with <=1 links\n"
     "\t  -pp - same as -p including paused links\n"
-    "\t  -y - find & kill ANY echoareas with <=1 links\n"
+    "\t  -y - find & kill ALL echoareas with <=1 links\n"
     "\t  -yp - same as -y including paused links\n"
-    "\t  -o num - kill passthrough area with dupebase older 'num' days\n"
+    "\t  -o num - kill passthrough area with dupebase older than"
+	"\t\t\t'num' days\n"
     "\t  -O num - same as -o but kill areas without dupebases\n"
-    "\t  -l file - with -o/-O write to file list of areas without dupebase\n"
+    "\t  -l file - with -o/-O write out file with list of areas"
+	"\t\t\twithout dupebase\n"
     "\t  -C - create empty dupebase if it doesn't exist\n"
     "\nDefault settings:\n"
-    " -  send unsubscribe message to subcribed nodes only\n"
+    " -  send unsubscribe message only to subcribed links\n"
     " -  leave config unchanged\n"
     " -  erase message & dupe bases\n");
     exit(-1);
@@ -148,7 +151,7 @@ int changeconfig(char *fileName, s_area *area) {
     }
     close_conf();
     nfree(line);
-    if (strend == -1) { /*  impossible   error occurred */
+    if (strend == -1) { /* "Never happens" */
         nfree(cfgline);
         nfree(fileName);
         return -1;
@@ -191,13 +194,13 @@ int putMsgInArea(s_area *echo, s_message *msg)
 	    rc = 1;
 
 	} else {
-	    fprintf(outlog, "Could not create new msg in %s!", echo->fileName);
+	    fprintf(outlog, "Unable to create new message in %s!", echo->fileName);
 	} /* endif */
 
 	MsgCloseArea(harea);
 
     } else {
-	fprintf(outlog, "Could not open/create Area %s!", echo->fileName);
+	fprintf(outlog, "Unable to open echoarea %s!", echo->fileName);
     } /* endif */
     return rc;
 }
@@ -274,7 +277,7 @@ void update_queue(s_area *area)
 
     if ( !(queryFile = fopen(robot->queueFile,"a+b")) ) /* can't open query file */
     {
-       w_log(LL_ERR, "Can't open areafixQueueFile %s: %s", robot->queueFile, strerror(errno) );
+       w_log(LL_ERR, "Unable to open areafixQueueFile %s: %s", robot->queueFile, strerror(errno) );
        return;
     }
     rewind(queryFile);
@@ -323,7 +326,7 @@ void delete_area(s_area *area)
     unsigned int i;
     int rc;
 
-    fprintf(outlog, "Kill area %s\n", an);
+    fprintf(outlog, "Killing area %s\n", an);
 
     switch (sendUnSubscribe) {
 
@@ -355,16 +358,16 @@ void delete_area(s_area *area)
 	if (area->msgbType!=MSGTYPE_PASSTHROUGH) {
 	    fprintf(outlog, "  Removing base of %s...", an);
 	    rc=MsgDeleteBase(area->fileName, (word) area->msgbType);
-	    fprintf(outlog, "%s\n", rc ? "ok" : "unsuccessful");
+	    fprintf(outlog, "%s\n", rc ? "ok" : "failed");
 	}
 
 
 	if (area->dupeCheck != dcOff) {
 	    char *dupename = createDupeFileName(area);
 	    if (dupename) {
-		fprintf(outlog, "  Removing dupes of %s...", an);
+		fprintf(outlog, "  Removing dupebase for %s...", an);
 		rc=unlink(dupename);
-		fprintf(outlog, "%s\n", rc==0 ? "ok" : "unsuccessful");
+		fprintf(outlog, "%s\n", rc==0 ? "ok" : "failed");
 		nfree(dupename);
 	    }
 	}
@@ -447,7 +450,7 @@ int main(int argc, char **argv) {
                 if ( ++i<argc ) {
                     cfgfile = argv[i];
                 } else {
-                    fprintf( stderr, "Parameter required after -c\n");
+                    fprintf( stderr, "Option -c requires config file name\n");
                     usage();
                 }
                 break;
@@ -488,7 +491,7 @@ int main(int argc, char **argv) {
                     f=stdin;
                 } else {
                     if ( !(f=fopen(argv[i], "r"))) {
-                        fprintf(outlog, "%s: Can't open file '%s'\n", argv[0], argv[i]);
+                        fprintf(outlog, "%s: Unable to open file '%s'\n", argv[0], argv[i]);
                         exit(-1);
                     }
                 }
@@ -591,13 +594,13 @@ int main(int argc, char **argv) {
     else   config = readConfig(getConfigFileName());
 
     if (!config) {
-        fprintf(outlog, "Could not read fido config\n");
+        fprintf(outlog, "Unable to read fido config\n");
         return (1);
     }
 
     robot = getRobot(config, "areafix", -1);
     if (!robot) {
-        fprintf(outlog, "Could not find robot 'areafix' in config\n");
+        fprintf(outlog, "Unable to find robot 'areafix' in config\n");
         return (1);
     }
 
@@ -637,7 +640,7 @@ int main(int argc, char **argv) {
                                 if (listNoDupeFile) {
                                     if (!fNoDupe) {
                                         if (!(fNoDupe=fopen (listNoDupeFile, "a"))) {
-                                            fprintf (stderr, "Can't open file '%s' for appending\n", listNoDupeFile);
+                                            fprintf (stderr, "Unable to open file '%s' for appending\n", listNoDupeFile);
                                         }
                                     }
                                     if (fNoDupe) fprintf (fNoDupe, "%s\n", area->areaName);
@@ -683,7 +686,7 @@ int main(int argc, char **argv) {
                 }
             }
 
-            if (!found) fprintf(outlog, "Couldn't find area \"%s\"\n", areas[j]);
+            if (!found) fprintf(outlog, "Unable to find area \"%s\"\n", areas[j]);
         }
     }
 
@@ -695,13 +698,13 @@ int main(int argc, char **argv) {
         if (config->links[i]->msg) {
             link = config->links[i];
             if (link->hisAka.point)
-                fprintf(outlog, "Write message for %u:%u/%u.%u...",
+                fprintf(outlog, "Wrote message for %u:%u/%u.%u...",
                 link->hisAka.zone ,
                 link->hisAka.net  ,
                 link->hisAka.node ,
                 link->hisAka.point);
             else
-                fprintf(outlog, "Write message for %u:%u/%u...",
+                fprintf(outlog, "Wrote message for %u:%u/%u...",
                 link->hisAka.zone ,
                 link->hisAka.net  ,
                 link->hisAka.node);
@@ -719,7 +722,7 @@ int main(int argc, char **argv) {
     if (killed && config->echotosslog) {
         f=fopen(config->echotosslog, "a");
         if (f==NULL) {
-            fprintf(outlog, "\nCould not open or create EchoTossLogFile\n");
+            fprintf(outlog, "\nUnable to open or create EchoTossLogFile\n");
         } else {
             fprintf(f,"%s\n", config->netMailAreas[0].areaName);
             fclose(f);
@@ -735,7 +738,7 @@ int main(int argc, char **argv) {
                 if (f) {
                     fclose (f);
                 } else {
-                    fprintf (outlog, "Can't create %s\n", dupename);
+                    fprintf (outlog, "Unable to create %s\n", dupename);
                 }
             }
             nfree(dupename);

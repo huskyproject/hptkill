@@ -1,6 +1,6 @@
 .TH HPTKILL 1 "hptkill (v1.10)"
 .SH NAME
-hptkill \- Areas killing utility
+hptkill \- Echoarea removal tool
 .SH SYNOPSYS
 .TP
 .B hptkill
@@ -26,28 +26,28 @@ hptkill \- Areas killing utility
 .B [areaNameMask ...]
 .RE
 .SH DESCRIPTION
-hptkill is utility for killing echoareas from config and send unsubscribe
-message to all links for this area. Also it can search and kill passthrough
-areas with one link.
+hptkill is a tool for killing echoareas from config and send unsubscribe
+messages to all links for this area. It also can search and kill passthrough
+areas with only one link.
 .SH OPTIONS
 .TP 10
 .B \-c config
 specify alternate config file
 .TP 10
 .B \-1
-send unsubscribe message to first link only
+send unsubscribe message only to first link
 .TP 10
 .B \-n
-don't send unsubscribe message
+don't send unsubscribe messages
 .TP 10
 .B \-a
-send unsubscribe message all subscribed links
+send unsubscribe messages to all subscribed links
 .TP 10
 .B \-d
 delete area from config
 .TP 10
 .B \-s
-save (don't erase) message & dupe bases
+keep (save) message & dupe bases
 .TP 10
 .B \-f file
 read areas list from file in addition to args
@@ -59,13 +59,13 @@ read areas list from stdin in addition to args
 set Kill/Sent attribute to messages for links
 .TP 10
 .B \-p
-find & kill passthrough echoareas with <=1 links
+find & kill passthrough echoareas with <= 1 links
 .TP 10
 .B \-pp
 same as -p including paused links
 .TP 10
 .B \-y
-find & kill ANY echoareas with <=1 links
+find & kill ALL echoareas with <=1 links
 .TP 10
 .B \-yp
 same as -y including paused links
@@ -77,7 +77,7 @@ kill passthrough area with dupebase older 'days' days
 same as -o but kill areas without dupebases
 .TP 10
 .B \-l file
-with -o/-O write to file list of areas without dupebase
+with -o/-O write a list of areas without dupebase to file
 .TP 10
 .B \-C
 create empty dupebase if it doesn't exist
@@ -94,5 +94,5 @@ path/filename of the husky configuration file
 .SH AUTHOR
 Serguei Revtov 2:5021/11.10 or/and 2:5021/19.1
 .br
-This manual page was written by Pavel Andreew <pavel@collage.etel.ru>
-for the Debian GNU/Linux system (but may be used by others).
+This manual page was originally written by Pavel Andreew
+<pavel@collage.etel.ru>.
