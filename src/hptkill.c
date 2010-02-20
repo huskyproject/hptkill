@@ -88,7 +88,7 @@ void usage(void) {
     printf(
     "Usage: hptkill [options] [areaNameMask ...]\n"
     "Options:  -c config-file - specify alternate config file\n"
-    "\t  -1 - send unsubscribe message to first link only\n"
+    "\t  -1 - send unsubscribe message to the first link only\n"
     "\t  -n - don't send unsubscribe message\n"
     "\t  -a - send unsubscribe message all subscribed links\n"
     "\t  -d - delete area from config\n"
@@ -99,9 +99,9 @@ void usage(void) {
     "\t  -pp - same as -p with <=1 ACTIVE links\n"
     "\t  -y - find & kill ANY echoareas with <=1 links\n"
     "\t  -yp - same as -y with <=1 ACTIVE links\n"
-    "\t  -o num - kill passthrough area with dupebase older 'num' days\n"
+    "\t  -o num - kill passthrough areas with dupebases older 'num' days\n"
     "\t  -O num - same as -o but kill areas without dupebases\n"
-    "\t  -l file - with -o/-O write to file list of areas without dupebase\n"
+    "\t  -l file - with -o/-O write to file list of areas without dupebases\n"
     "\t  -C - create empty dupebase if it doesn't exist\n");
     printf(
     "\nDefault settings:\n"
