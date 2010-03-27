@@ -10,8 +10,9 @@
 # LIBSUFFIX  library filename suffix (compiler ID, three characters, somewhere empty)
 # DLLPREFIX  dinamic linking library prefix (usually empty)
 # DLLSUFFIX  dinamic linking library suffix (compiler ID or empty)
-# _SRC_DIR  sources dir
+# O, B, L, H prefixes to use with names of objects, binaries, libraries and headers respectively
 
+# Module name
 LIBNAME = hptkill
 
 # Version
@@ -21,20 +22,20 @@ VERPATCH= 0
 VERH	= $(VERMAJOR).$(VERMINOR)
 VER	= $(VERH).$(VERPATCH)
 
-# Object files (please sort list to easy check by human)
-OBJS	= hptkill$(_OBJ)
-
-# Header files
-HEADERS	= cvsdate.h version.h
-
 # Sources directory
 _SRC_DIR= ../src/
-
 # Headers directory
 H_DIR	= ../h/
 
+# Header files
+HEADERS	= $(H)cvsdate.h $(H)version.h
+
+# Object files (please sort list to easy check by human)
+OBJS	= $(O)hptkill$(_OBJ)
+
+
 # Binary file(s) to build from sources
-PROGRAMS= $(LIBNAME)$(_EXE)
+PROGRAMS= $(B)$(LIBNAME)$(_EXE)
 
 # List of FIDOCONFIG libraries required to build binary file(s)
 LIBS	=
