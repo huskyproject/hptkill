@@ -58,8 +58,8 @@ distclean: clean
 	-$(RM) $(RMOPT) hptkill.1.gz
 
 install: hptkill$(_EXE) hptkill.1.gz
-	$(INSTALL) $(IBOPT) hptkill$(_EXE) $(BINDIR)
-	$(INSTALL) $(IMOPT) hptkill.1.gz $(MANDIR)/man1
+	$(INSTALL) $(IBOPT) hptkill$(_EXE) $(DESTDIR)$(BINDIR)
+	$(INSTALL) $(IMOPT) hptkill.1.gz $(DESTDIR)$(MANDIR)/man1
 
 uninstall:
 	$(RM) $(RMOPT) $(BINDIR)$(DIRSEP)hptkill$(_EXE)
