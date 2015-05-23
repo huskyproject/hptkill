@@ -14,12 +14,16 @@
 ifeq ($(DEBIAN), 1)
 # Every Debian-Source-Paket has one included.
 include /usr/share/husky/huskymak.cfg
+else ifdef RPM_BUILD_ROOT
+# RPM build requires all files to be in the source directory
+include huskymak.cfg
 else
 include ../huskymak.cfg
 endif
 
 OBJS    = hptkill$(_OBJ)
 SRC_DIR = src/
+MAN1DIR  = $(MANDIR)$(DIRSEP)man1
 
 ifeq ($(DEBUG), 1)
   CFLAGS = $(DEBCFLAGS) -Ih -I$(INCDIR) $(WARNFLAGS)
@@ -58,6 +62,7 @@ distclean: clean
 	-$(RM) $(RMOPT) hptkill.1.gz
 
 install: hptkill$(_EXE) hptkill.1.gz
+	$(MKDIR) $(MKDIROPT) $(DESTDIR)$(BINDIR) $(DESTDIR)$(MAN1DIR)
 	$(INSTALL) $(IBOPT) hptkill$(_EXE) $(DESTDIR)$(BINDIR)
 	$(INSTALL) $(IMOPT) hptkill.1.gz $(DESTDIR)$(MANDIR)/man1
 
