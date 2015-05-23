@@ -84,6 +84,7 @@ const   long    secInDay = 3600*24;
 void usage(void) {
 
     printf(
+    "hptkill is a tool for removing echoareas\n"
     "Usage: hptkill [options] [areaNameMask ...]\n"
     "Options:"
     "\t  -c config-file - specify alternate config file\n"
