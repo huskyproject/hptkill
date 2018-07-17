@@ -28,6 +28,7 @@ before_install:
   - if [ -n "$PACKAGES" ]; then travis_retry sudo apt-get install --no-install-recommends
     --no-upgrade -qq $PACKAGES; fi
 script:
+  - eval "${MATRIX_EVAL}"
   - cd  ~/build/huskyproject/huskylib
   - mkdir build
   - cd build
