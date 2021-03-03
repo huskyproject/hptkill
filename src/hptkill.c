@@ -315,7 +315,7 @@ void update_queue(s_area *area)
                 t2.tm_hour,
                 t2.tm_min   );
 
-        xstrscat(&line, " ", aka2str(*(area->useAka)), "\n", NULL);
+        xstrscat(&line, " ", aka2str(area->useAka), "\n", NULL);
         fputs(line , queryFile);
     }
     fclose(queryFile);
