@@ -505,7 +505,7 @@ int main(int argc, char **argv) {
                         if(spacep) { /* Format FILEBONE.NA: "areatag comment" */
                           *spacep=0; /* First char should be alphanumberic    */
                           spacep=strdup(line);
-                          free(line);
+                          nfree(line);
                           line=spacep;
                         }
                         if( line[0]==0 ) continue; /* skip empty line */
