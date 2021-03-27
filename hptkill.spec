@@ -22,7 +22,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 hptkill is an echoarea removal tool from the Husky Project.
 
 %prep
-%setup -q -n %{name}
+%setup -q -n %name-%ver_major.%ver_minor.%reldate
 
 %build
 make
