@@ -33,7 +33,11 @@
 
 # for CentOS, Fedora and RHEL
 %if "%_vendor" == "redhat"
-    %global vendor_suffix %dist
+    %if 0%{?fedora}
+        %global vendor_suffix .fc%fedora
+    %else
+        %global vendor_suffix %dist
+    %endif
 %endif
 
 # for ALT Linux
