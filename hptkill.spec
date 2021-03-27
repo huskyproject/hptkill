@@ -5,6 +5,9 @@
 %global reltype C
 # may be one of: C (current), R (release), S (stable)
 
+# release number for Release: header
+%global relnum 1
+
 # on default static application binary is built but using
 # 'rpmbuild --without static' produces an application binary that uses
 # dynamic libraries from other subprojects of the Husky project
