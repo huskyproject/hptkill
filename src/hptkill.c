@@ -284,8 +284,8 @@ void update_queue(s_area *area)
     rewind(queryFile);
     while ((line = readLine(queryFile)) != NULL)
     {
-        char* token = strtok( line, seps );
-        if(strcasecmp(token,area->areaName) == 0)
+        char * token = strtok( line, seps );
+        if(token && strcasecmp(token,area->areaName) == 0)
         {
             upDate = 1;
             break;
@@ -508,7 +508,8 @@ int main(int argc, char **argv) {
                           nfree(line);
                           line=spacep;
                         }
-                        if( line[0]==0 ) continue; /* skip empty line */
+                        if(line && line[0]==0)
+                            continue; /* skip empty line */
                         nareas++;
                         areas = (char **)srealloc ( areas, nareas*sizeof(char *));
                         areas[nareas-1] = line;
