@@ -168,7 +168,7 @@ int changeconfig(char *fileName, s_area *area) {
 int putMsgInArea(s_area *echo, s_message *msg)
 {
     char *ctrlBuff, *textStart, *textWithoutArea;
-    UINT textLength;
+    size_t textLength;
     HAREA harea;
     HMSG  hmsg;
     XMSG  msgHeader;
