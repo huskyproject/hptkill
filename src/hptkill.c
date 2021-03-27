@@ -700,13 +700,13 @@ int main(int argc, char **argv) {
         if (config->links[i]->msg) {
             link = config->links[i];
             if (link->hisAka.point)
-                fprintf(outlog, "Wrote message for %u:%u/%u.%u...",
+                fprintf(outlog, "Wrote message for %d:%d/%d.%d...",
                 link->hisAka.zone ,
                 link->hisAka.net  ,
                 link->hisAka.node ,
                 link->hisAka.point);
             else
-                fprintf(outlog, "Wrote message for %u:%u/%u...",
+                fprintf(outlog, "Wrote message for %d:%d/%d...",
                 link->hisAka.zone ,
                 link->hisAka.net  ,
                 link->hisAka.node);
