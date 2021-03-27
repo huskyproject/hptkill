@@ -428,7 +428,7 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="..\h\cvsdate.h"
+				RelativePath="..\cvsdate.h"
 				>
 			</File>
 			<File

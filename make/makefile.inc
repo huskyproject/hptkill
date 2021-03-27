@@ -28,7 +28,7 @@ _SRC_DIR= ../src/
 H_DIR	= ../h/
 
 # Header files
-HEADERS	= $(H)cvsdate.h $(H)version.h
+HEADERS	= ../cvsdate.h $(H)version.h
 
 # Object files (please sort list to easy check by human)
 OBJS	= $(O)hptkill$(_OBJ)

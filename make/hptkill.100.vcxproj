@@ -277,7 +277,7 @@
     <ClCompile Include="..\src\hptkill.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\h\cvsdate.h" />
+    <ClInclude Include="..\cvsdate.h" />
     <ClInclude Include="..\h\version.h" />
   </ItemGroup>
   <ItemGroup>
