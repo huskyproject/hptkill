@@ -33,6 +33,9 @@
 #include <string.h>
 
 #include <huskylib/compiler.h>
+#ifndef __bool_true_false_are_defined
+#include <stdbool.h>
+#endif
 
 #ifdef HAS_PROCESS_H
 #  include <process.h>
@@ -178,14 +181,14 @@ int changeconfig(char * fileName, s_area * area)
     return 0;
 } /* changeconfig */
 
-int putMsgInArea(s_area * echo, s_message * msg)
+bool putMsgInArea(s_area * echo, s_message * msg)
 {
     char * ctrlBuff, * textStart, * textWithoutArea;
     size_t textLength;
     HAREA harea;
     HMSG hmsg;
     XMSG msgHeader;
-    int rc = 0;
+    bool rc = false;
 
     harea = MsgOpenArea((UCHAR *)echo->fileName, MSGAREA_CRIFNEC, (word)(echo->msgbType));
 
@@ -211,7 +214,7 @@ int putMsgInArea(s_area * echo, s_message * msg)
                         (byte *)ctrlBuff);
             MsgCloseMsg(hmsg);
             nfree(ctrlBuff);
-            rc = 1;
+            rc = true;
         }
         else
         {
