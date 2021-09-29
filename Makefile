@@ -1,72 +1,143 @@
-# $Id$
-#============================================================================
-# Common makefile for hptkill
+# hptkill/Makefile
 #
 # This file is part of hptkill, part of the Husky fidonet software project
-# For latest version see: http://husky.physcip.uni-stuttgart.de
-#
-# Use with GNU version of make
-#
-# Require: husky enviroment
+# Use with GNU version of make v.3.82 or later
+# Requires: husky enviroment
 #
 
-# include Husky-Makefile-Config
-ifeq ($(DEBIAN), 1)
-# Every Debian-Source-Paket has one included.
-include /usr/share/husky/huskymak.cfg
-else ifdef RPM_BUILD_ROOT
-# RPM build requires all files to be in the source directory
-include huskymak.cfg
-else
-include ../huskymak.cfg
+# Version
+hptkill_g1:=$(GREP) -Po 'define\s+VER_MAJOR\s+\K\d+'
+hptkill_g2:=$(GREP) -Po 'define\s+VER_MINOR\s+\K\d+'
+hptkill_g3:=$(GREP) -Po 'define\s+VER_PATCH\s+\K\d+'
+hptkill_g4:=$(GREP) -Po 'char\s+cvs_date\[\]\s*=\s*"\K\d+-\d+-\d+'
+hptkill_VERMAJOR := $(shell $(hptkill_g1) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
+hptkill_VERMINOR := $(shell $(hptkill_g2) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
+hptkill_VERPATCH := $(shell $(hptkill_g3) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
+hptkill_cvsdate  := $(shell $(hptkill_g4) $(hptkill_ROOTDIR)cvsdate.h)
+hptkill_reldate  := $(subst -,,$(hptkill_cvsdate))
+hptkill_VER      := $(hptkill_VERMAJOR).$(hptkill_VERMINOR).$(hptkill_reldate)
+
+hptkill_LIBS := $(fidoconf_TARGET_BLD) $(smapi_TARGET_BLD) $(huskylib_TARGET_BLD)
+
+hptkill_CFLAGS = $(CFLAGS)
+hptkill_CDEFS := $(CDEFS) -I$(fidoconf_ROOTDIR) -I$(smapi_ROOTDIR) \
+                          -I$(huskylib_ROOTDIR) -I$(hptkill_ROOTDIR)$(hptkill_H_DIR)
+
+hptkill_SRC  = $(hptkill_SRCDIR)hptkill.c
+hptkill_OBJS = $(addprefix $(hptkill_OBJDIR),$(notdir $(hptkill_SRC:.c=$(_OBJ))))
+hptkill_DEPS = $(addprefix $(hptkill_DEPDIR),$(notdir $(hptkill_SRC:.c=$(_DEP))))
+
+hptkill_TARGET     = hptkill$(_EXE)
+hptkill_TARGET_BLD = $(hptkill_BUILDDIR)$(hptkill_TARGET)
+hptkill_TARGET_DST = $(BINDIR_DST)$(hptkill_TARGET)
+
+ifdef MAN1DIR
+    hptkill_MAN1PAGES := hptkill.1
+    hptkill_MAN1BLD := $(hptkill_BUILDDIR)$(hptkill_MAN1PAGES).gz
+    hptkill_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(hptkill_MAN1PAGES).gz
 endif
 
-OBJS    = hptkill$(_OBJ)
-SRC_DIR = src/
-MAN1DIR  = $(MANDIR)$(DIRSEP)man1
+.PHONY: hptkill_all hptkill_install hptkill_uninstall hptkill_clean \
+        hptkill_distclean hptkill_depend hptkill_rmdir_DEP hptkill_rm_DEPS \
+        hptkill_clean_OBJ hptkill_main_distclean
 
-ifeq ($(DEBUG), 1)
-  CFLAGS = $(DEBCFLAGS) -Ih -I$(INCDIR) $(WARNFLAGS)
-  LFLAGS = $(DEBLFLAGS)
-else
-  CFLAGS = $(OPTCFLAGS) -Ih -I$(INCDIR) $(WARNFLAGS)
-  LFLAGS = $(OPTLFLAGS)
+hptkill_all: $(hptkill_TARGET_BLD) $(hptkill_MAN1BLD)
+
+ifneq ($(MAKECMDGOALS), depend)
+    ifneq ($(MAKECMDGOALS), distclean)
+        ifneq ($(MAKECMDGOALS), uninstall)
+            include $(hptkill_DEPS)
+        endif
+    endif
 endif
 
-ifeq ($(SHORTNAME), 1)
-  LIBS  = -L$(LIBDIR) -lfidoconf -lsmapi -lhusky
+
+# Build application
+$(hptkill_TARGET_BLD): $(hptkill_OBJS) $(hptkill_LIBS) | do_not_run_make_as_root
+	$(CC) $(LFLAGS) $(EXENAMEFLAG) $@ $^
+
+# Compile .c files
+$(hptkill_OBJS): $(hptkill_SRC) | $(hptkill_OBJDIR) do_not_run_make_as_root
+	$(CC) $(hptkill_CFLAGS) $(hptkill_CDEFS) -o $@ $<
+
+$(hptkill_OBJDIR): | $(hptkill_BUILDDIR) do_not_run_make_as_root
+	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
+
+
+# Build man pages
+ifdef MAN1DIR
+    $(hptkill_MAN1BLD): $(hptkill_MANDIR)$(hptkill_MAN1PAGES) | do_not_run_make_as_root
+	gzip -c $< > $@
 else
-  LIBS  = -L$(LIBDIR) -lfidoconfig -lsmapi -lhusky
+    $(hptkill_MAN1BLD): ;
 endif
 
-CDEFS=-D$(OSTYPE) $(ADDCDEFS)
 
-all: $(OBJS) hptkill$(_EXE) hptkill.1.gz
+# Install
+ifneq ($(MAKECMDGOALS), install)
+    hptkill_install: ;
+else
+    hptkill_install: $(hptkill_TARGET_DST) hptkill_install_man ;
+endif
 
-%$(_OBJ): $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(CDEFS) $(SRC_DIR)$*.c
+$(hptkill_TARGET_DST): $(hptkill_TARGET_BLD) | $(DESTDIR)$(BINDIR)
+	$(INSTALL) $(IBOPT) $< $(DESTDIR)$(BINDIR); \
+	$(TOUCH) "$@"
 
-hptkill$(_EXE): $(OBJS)
-	$(CC) $(LFLAGS) -o hptkill$(_EXE) $(OBJS) $(LIBS)
+ifndef MAN1DIR
+    hptkill_install_man: ;
+else
+    hptkill_install_man: $(hptkill_MAN1DST)
 
-hptkill.1.gz : hptkill.1
-	gzip -9c hptkill.1 > hptkill.1.gz
+    $(hptkill_MAN1DST): $(hptkill_MAN1BLD) | $(DESTDIR)$(MAN1DIR)
+	$(INSTALL) $(IMOPT) $< $(DESTDIR)$(MAN1DIR); $(TOUCH) "$@"
+endif
 
-clean:
-	-$(RM) $(RMOPT) *$(_OBJ)
-	-$(RM) $(RMOPT) *~
-	-$(RM) $(RMOPT) core
 
-distclean: clean
-	-$(RM) $(RMOPT) hptkill$(_EXE)
-	-$(RM) $(RMOPT) hptkill.1.gz
+# Clean
+hptkill_clean: hptkill_clean_OBJ
+	-[ -d "$(hptkill_OBJDIR)" ] && $(RMDIR) $(hptkill_OBJDIR) || true
 
-install: hptkill$(_EXE) hptkill.1.gz
-	$(MKDIR) $(MKDIROPT) $(DESTDIR)$(BINDIR) $(DESTDIR)$(MAN1DIR)
-	$(INSTALL) $(IBOPT) hptkill$(_EXE) $(DESTDIR)$(BINDIR)
-	$(INSTALL) $(IMOPT) hptkill.1.gz $(DESTDIR)$(MANDIR)/man1
+hptkill_clean_OBJ:
+	-$(RM) $(RMOPT) $(hptkill_OBJDIR)*
 
-uninstall:
-	$(RM) $(RMOPT) $(BINDIR)$(DIRSEP)hptkill$(_EXE)
-	$(RM) $(RMOPT) $(MANDIR)$(DIRSEP)man1$(DIRSEP)hptkill.1.gz
+# Distclean
+hptkill_distclean: hptkill_main_distclean hptkill_rmdir_DEP
+	-[ -d "$(hptkill_BUILDDIR)" ] && $(RMDIR) $(hptkill_BUILDDIR) || true
 
+hptkill_rmdir_DEP: hptkill_rm_DEPS
+	-[ -d "$(hptkill_DEPDIR)" ] && $(RMDIR) $(hptkill_DEPDIR) || true
+
+hptkill_rm_DEPS:
+	-$(RM) $(RMOPT) $(hptkill_DEPDIR)*
+
+hptkill_main_distclean: hptkill_clean
+	-$(RM) $(RMOPT) $(hptkill_TARGET_BLD)
+ifdef MAN1DIR
+	-$(RM) $(RMOPT) $(hptkill_MAN1BLD)
+endif
+
+
+# Uninstall
+hptkill_uninstall:
+	-$(RM) $(RMOPT) $(hptkill_TARGET_DST)
+ifdef MAN1DIR
+	-$(RM) $(RMOPT) $(hptkill_MAN1DST)
+endif
+
+
+# Depend
+hptkill_depend: $(hptkill_DEPS) ;
+
+# Build a dependency makefile for the source file
+$(hptkill_DEPS): $(hptkill_DEPDIR)%$(_DEP): $(hptkill_SRCDIR)%.c | $(hptkill_DEPDIR)
+	@set -e; rm -f $@; \
+	$(CC) -MM $(hptkill_CFLAGS) $(hptkill_CDEFS) $< > $@.$$$$; \
+	sed 's,\($*\)$(_OBJ)[ :]*,$(hptkill_OBJDIR)\1$(_OBJ) $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+$(hptkill_DEPDIR): | $(hptkill_BUILDDIR) do_not_run_depend_as_root
+	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
+
+$(hptkill_BUILDDIR):
+	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
