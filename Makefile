@@ -127,6 +127,7 @@ endif
 
 
 # Depend
+ifeq ($(MAKECMDGOALS),depend)
 hptkill_depend: $(hptkill_DEPS) ;
 
 # Build a dependency makefile for the source file
@@ -138,6 +139,7 @@ $(hptkill_DEPS): $(hptkill_DEPDIR)%$(_DEP): $(hptkill_SRCDIR)%.c | $(hptkill_DEP
 
 $(hptkill_DEPDIR): | $(hptkill_BUILDDIR) do_not_run_depend_as_root
 	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
+endif
 
 $(hptkill_BUILDDIR):
 	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
