@@ -516,7 +516,8 @@ int main(int argc, char ** argv)
 
     outlog = stdout;
     setbuf(outlog, NULL);
-    versionStr = GenVersionStr("hptkill", VER_MAJOR, VER_MINOR, VER_PATCH, VER_BRANCH, cvs_date);
+    versionStr = GenVersionStr("hptkill", hptkill_VER_MAJOR, hptkill_VER_MINOR,
+                               hptkill_VER_PATCH, hptkill_VER_BRANCH, cvs_date);
     fprintf(outlog, "%s\n\n", versionStr);
 
     for(i = 1; i < argc; i++)
