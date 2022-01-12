@@ -5,18 +5,6 @@
 # Requires: husky enviroment
 #
 
-# Version
-hptkill_g1:=$(GREP) -Po 'define\s+hptkill_VER_MAJOR\s+\K\d+'
-hptkill_g2:=$(GREP) -Po 'define\s+hptkill_VER_MINOR\s+\K\d+'
-hptkill_g3:=$(GREP) -Po 'define\s+hptkill_VER_PATCH\s+\K\d+'
-hptkill_g4:=$(GREP) -Po 'char\s+cvs_date\[\]\s*=\s*"\K\d+-\d+-\d+'
-hptkill_VERMAJOR := $(shell $(hptkill_g1) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
-hptkill_VERMINOR := $(shell $(hptkill_g2) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
-hptkill_VERPATCH := $(shell $(hptkill_g3) $(hptkill_ROOTDIR)$(hptkill_H_DIR)version.h)
-hptkill_cvsdate  := $(shell $(hptkill_g4) $(hptkill_ROOTDIR)cvsdate.h)
-hptkill_reldate  := $(subst -,,$(hptkill_cvsdate))
-hptkill_VER      := $(hptkill_VERMAJOR).$(hptkill_VERMINOR).$(hptkill_reldate)
-
 hptkill_LIBS := $(fidoconf_TARGET_BLD) $(smapi_TARGET_BLD) $(huskylib_TARGET_BLD)
 
 hptkill_CFLAGS = $(CFLAGS)
