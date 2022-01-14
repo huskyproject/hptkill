@@ -25,11 +25,11 @@ ifdef MAN1DIR
     hptkill_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(hptkill_MAN1PAGES).gz
 endif
 
-.PHONY: hptkill_all hptkill_install hptkill_uninstall hptkill_clean \
+.PHONY: hptkill_build hptkill_install hptkill_uninstall hptkill_clean \
         hptkill_distclean hptkill_depend hptkill_rmdir_DEP hptkill_rm_DEPS \
         hptkill_clean_OBJ hptkill_main_distclean
 
-hptkill_all: $(hptkill_TARGET_BLD) $(hptkill_MAN1BLD)
+hptkill_build: $(hptkill_TARGET_BLD) $(hptkill_MAN1BLD)
 
 ifneq ($(MAKECMDGOALS), depend)
     ifneq ($(MAKECMDGOALS), distclean)
