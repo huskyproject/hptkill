@@ -122,7 +122,7 @@ hptkill_depend: $(hptkill_DEPS) ;
 $(hptkill_DEPS): $(hptkill_DEPDIR)%$(_DEP): $(hptkill_SRCDIR)%.c | $(hptkill_DEPDIR)
 	@set -e; rm -f $@; \
 	$(CC) -MM $(hptkill_CFLAGS) $(hptkill_CDEFS) $< > $@.$$$$; \
-	sed 's,\($*\)$(_OBJ)[ :]*,$(hptkill_OBJDIR)\1$(_OBJ) $@ : ,g' < $@.$$$$ > $@; \
+	sed 's,\($*\)$(__OBJ)[ :]*,$(hptkill_OBJDIR)\1$(_OBJ) $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 $(hptkill_DEPDIR): | $(hptkill_BUILDDIR) do_not_run_depend_as_root
