@@ -7,13 +7,11 @@
 
 hptkill_LIBS := $(fidoconf_TARGET_BLD) $(smapi_TARGET_BLD) $(huskylib_TARGET_BLD)
 
-hptkill_CFLAGS = $(CFLAGS)
 hptkill_CDEFS := $(CDEFS) -I$(fidoconf_ROOTDIR) -I$(smapi_ROOTDIR) \
                           -I$(huskylib_ROOTDIR) -I$(hptkill_ROOTDIR)$(hptkill_H_DIR)
 
 hptkill_SRC  = $(hptkill_SRCDIR)hptkill.c
 hptkill_OBJS = $(addprefix $(hptkill_OBJDIR),$(notdir $(hptkill_SRC:.c=$(_OBJ))))
-hptkill_DEPS = $(addprefix $(hptkill_DEPDIR),$(notdir $(hptkill_SRC:.c=$(_DEP))))
 
 hptkill_TARGET     = hptkill$(_EXE)
 hptkill_TARGET_BLD = $(hptkill_BUILDDIR)$(hptkill_TARGET)
@@ -112,22 +110,3 @@ hptkill_uninstall:
 ifdef MAN1DIR
 	-$(RM) $(RMOPT) $(hptkill_MAN1DST)
 endif
-
-
-# Depend
-ifeq ($(MAKECMDGOALS),depend)
-hptkill_depend: $(hptkill_DEPS) ;
-
-# Build a dependency makefile for the source file
-$(hptkill_DEPS): $(hptkill_DEPDIR)%$(_DEP): $(hptkill_SRCDIR)%.c | $(hptkill_DEPDIR)
-	@set -e; rm -f $@; \
-	$(CC) -MM $(hptkill_CFLAGS) $(hptkill_CDEFS) $< > $@.$$$$; \
-	sed 's,\($*\)$(__OBJ)[ :]*,$(hptkill_OBJDIR)\1$(_OBJ) $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
-
-$(hptkill_DEPDIR): | $(hptkill_BUILDDIR) do_not_run_depend_as_root
-	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
-endif
-
-$(hptkill_BUILDDIR):
-	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
