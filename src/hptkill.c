@@ -377,7 +377,7 @@ void update_queue(s_area * area)
     fclose(queryFile);
 } /* update_queue */
 
-void delete_area(s_area * area)
+void delete_area(s_area * area, char * cfgfile)
 {
     char * an = area->areaName;
     unsigned int i;
@@ -441,10 +441,21 @@ void delete_area(s_area * area)
     /* remove area from config-file */
     if(delFromConfig)
     {
+        int res;
+
         update_queue(area);
         fprintf(outlog, "   deleting from config");
 
-        if(changeconfig(getConfigFileName(), area) != 0)
+        if(cfgfile && cfgfile[0])
+        {
+            res = changeconfig(cfgfile, area);
+        }
+        else
+        {
+            res = changeconfig(getConfigFileName(), area);
+        }
+
+        if(res != 0)
         {
             fprintf(outlog, " ERROR!\n");
         }
@@ -856,7 +867,7 @@ int main(int argc, char ** argv)
 
                 if(delArea)
                 {
-                    delete_area(area);
+                    delete_area(area, cfgfile);
                     killed++;
                     found++;
 
@@ -876,7 +887,7 @@ int main(int argc, char ** argv)
             {
                 if(patimat(area->areaName, areas[j]) == 1)
                 {
-                    delete_area(area);
+                    delete_area(area, cfgfile);
                     killed++;
                     found++;
 
