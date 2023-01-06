@@ -108,7 +108,7 @@ void usage(void)
     exit(-1);
 }
 
-int changeconfig(const char * fileName, s_area * area)
+int changeconfig(char * fileName, s_area * area)
 {
     char * cfgline = NULL, * token = NULL, * tmpPtr = NULL, * line = NULL;
     long strbeg = 0, strend = -1;
@@ -168,13 +168,13 @@ int changeconfig(const char * fileName, s_area * area)
     if(strend == -1)    /* "Never happens" */
     {
         nfree(cfgline);
-        nfree((void *)fileName);
+        nfree(fileName);
         return -1;
     }
 
     nfree(cfgline);
     InsertCfgLine(fileName, cfgline, strbeg, strend);
-    nfree((void *)fileName);
+    nfree(fileName);
     return 0;
 } /* changeconfig */
 
@@ -347,7 +347,7 @@ void update_queue(s_area * area)
 
         nfree(line);
     }
-    nfree(line);
+    nfree(line)
 
     if(upDate == 0)
     {
@@ -377,7 +377,7 @@ void update_queue(s_area * area)
     fclose(queryFile);
 } /* update_queue */
 
-void delete_area(s_area * area, const char * cfgfile)
+void delete_area(s_area * area, char * cfgfile)
 {
     char * an = area->areaName;
     unsigned int i;
