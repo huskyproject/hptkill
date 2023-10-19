@@ -19,8 +19,8 @@ hptkill_TARGET_DST = $(BINDIR_DST)$(hptkill_TARGET)
 
 ifdef MAN1DIR
     hptkill_MAN1PAGES := hptkill.1
-    hptkill_MAN1BLD := $(hptkill_BUILDDIR)$(hptkill_MAN1PAGES).gz
-    hptkill_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(hptkill_MAN1PAGES).gz
+    hptkill_MAN1BLD := $(hptkill_BUILDDIR)$(hptkill_MAN1PAGES)$(_COMPR)
+    hptkill_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(hptkill_MAN1PAGES)$(_COMPR)
 endif
 
 .PHONY: hptkill_build hptkill_install hptkill_uninstall hptkill_clean \
@@ -53,7 +53,11 @@ $(hptkill_OBJDIR): | $(hptkill_BUILDDIR) do_not_run_make_as_root
 # Build man pages
 ifdef MAN1DIR
     $(hptkill_MAN1BLD): $(hptkill_MANDIR)$(hptkill_MAN1PAGES) | do_not_run_make_as_root
-	gzip -c $< > $@
+    ifdef COMPRESS
+		$(COMPRESS) -c $< > $@
+    else
+		$(CP) $(CPOPT) $< $@
+    endif
 else
     $(hptkill_MAN1BLD): ;
 endif
